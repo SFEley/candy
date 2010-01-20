@@ -10,6 +10,7 @@ begin
     gem.email = "sfeley@gmail.com"
     gem.homepage = "http://github.com/SFEley/candy"
     gem.authors = ["Stephen Eley"]
+    gem.add_dependency "mongo", ">= 0.18"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     gem.add_development_dependency "mocha", ">= 0.9.8"
