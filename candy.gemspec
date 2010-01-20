@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{candy}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
@@ -29,6 +29,7 @@ converts almost any object for assignment to any attribute.
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "candy.gemspec",
      "lib/candy.rb",
      "lib/candy/crunch.rb",
      "lib/candy/exceptions.rb",
