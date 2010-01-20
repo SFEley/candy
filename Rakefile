@@ -6,7 +6,15 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "candy"
     gem.summary = %Q{The simplest MongoDB ORM}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = <<DESCRIPTION
+Candy is a lightweight ORM for the MongoDB database. If MongoMapper is Rails, Candy is Sinatra. 
+It provides a module you mix into any class, enabling the class to connect to Mongo on its own
+and push its objects into a collection. Candied objects act like OpenStructs, allowing attributes
+to be defined and updated in Mongo immediately without having to be declared in the class. 
+Mongo's atomic operators are used whenever possible, and a smart serializer (Candy::Wrapper) 
+converts almost any object for assignment to any attribute.
+DESCRIPTION
+
     gem.email = "sfeley@gmail.com"
     gem.homepage = "http://github.com/SFEley/candy"
     gem.authors = ["Stephen Eley"]
