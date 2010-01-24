@@ -1,5 +1,5 @@
 require 'mongo'
-require 'etc'
+require 'etc'  # To get the current username for database default
 
 module Candy
   

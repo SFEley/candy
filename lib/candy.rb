@@ -1,5 +1,6 @@
 require 'candy/exceptions'
 require 'candy/crunch'
+require 'candy/wrapper'
 
 # Mix me into your classes and Mongo will like them!
 module Candy
