@@ -77,7 +77,7 @@ Yes.  It may seem at first like an inversion: Candy only stores attributes that 
 
 Here's the reason. I have no idea what kind of logic you might want to put in your classes. I don't want to guess what you want to store or not -- and more to the point, I don't want to make _you_ guess.  Unless you want to.
 
-Candy properties are dumb.  They don't have calculations. They don't memoize or cache. They have nothing to do with instance variables. If you _want_ to make something smarter, just set up your accessors and have them talk to  Candy behind the scenes:
+Candy properties are dumb.  They don't have calculations. They don't cache. They have nothing to do with instance variables. If you _want_ to make something smarter, just set up your accessors and have them talk to  Candy behind the scenes:
 
     class Zagnut
       include Candy

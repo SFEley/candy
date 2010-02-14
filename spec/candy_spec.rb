@@ -44,6 +44,17 @@ describe "Candy" do
     @this.licks.should == 7
   end
   
+  it "can set properties explicity" do
+    @this.set(:licks, 17)
+    @this.licks.should == 17
+  end
+  
+  it "can set properties from a hash" do
+    @this.set(:licks => 19, :center => -2.5)
+    @this.licks.should == 19
+    @this.center.should == -2.5
+  end
+  
   it "wraps objects" do
     o = Object.new
     @this.object = o
@@ -122,7 +133,36 @@ describe "Candy" do
       
   end
   
+  describe "arrays" do
+    it "can push items" do
+      @this.push(:colors, 'red')
+      @this.colors.should == ['red']
+    end
+    
+    it "can push an array of items" do
+      @this.push(:potpourri, 'red', 75, nil)
+      @this.potpourri.should == ['red', 75, nil]
+    end
+  end
   
+  describe "numbers" do
+    it "can be incremented by 1 when not set" do
+      @this.inc(:bites)
+      @this.bites.should == 1
+    end
+    
+    it "can be incremented by 1 when set" do
+      @this.bites = 11
+      @this.inc(:bites)
+      @this.bites.should == 12
+    end
+    
+    it "can be incremented by any number" do
+      @this.bites = -6
+      @this.inc(:bites, 15)
+      @this.bites.should == 9
+    end
+  end
   
   after(:each) do
     Zagnut.collection.remove

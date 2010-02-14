@@ -4,4 +4,6 @@ module Candy
   class CandyError < StandardError; end
     
   class ConnectionError < CandyError; end
+  
+  class TypeError < CandyError; end
 end

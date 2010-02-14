@@ -95,6 +95,18 @@ module Candy
         @collection ||= db.create_collection(name)
       end
       
+      # Creates an index on the specified property, with an optional direction specified as either :asc or :desc.
+      # (Note that this is deliberately a very simple method. If you want multi-key or unique indexes, just call
+      # #create_index directly on the collection.)
+      def index(property, direction=:asc)
+        case direction
+        when :asc then mongo_direction = Mongo::ASCENDING
+        when :desc then mongo_direction = Mongo::DESCENDING
+        else
+          raise TypeError, "Index direction should be :asc or :desc"
+        end
+        collection.create_index(property => mongo_direction)
+      end
     end
     
     module InstanceMethods

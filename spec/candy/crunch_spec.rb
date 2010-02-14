@@ -144,6 +144,26 @@ describe Candy::Crunch do
   
   end
   
+  describe "index" do
+    it "can be created with just a property name" do
+      PeanutBrittle.index(:blah)
+      PeanutBrittle.collection.index_information.values[1].should == [["blah", Mongo::ASCENDING]]
+    end
+    
+    it "can be created with a direction" do
+      PeanutBrittle.index(:fwah, :desc)
+      PeanutBrittle.collection.index_information.values[1].should == [["fwah", Mongo::DESCENDING]]
+    end
+    
+    it "throws an exception if you give it a type other than :asc or :desc" do
+      lambda{PeanutBrittle.index(:yah, 5)}.should raise_error(Candy::TypeError, "Index direction should be :asc or :desc")  
+    end
+    
+    after(:each) do
+      PeanutBrittle.collection.drop_indexes
+    end
+  end
+  
   after(:each) do
     PeanutBrittle.connection = nil
   end

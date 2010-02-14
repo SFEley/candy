@@ -69,12 +69,39 @@ module Candy
     # Retrieving any unknown attribute will return that value from this record in the Mongo collection.
     def method_missing(name, *args, &block)
       if name =~ /(.*)=$/  # We're assigning
-        self.class.collection.update({"_id" => @__candy}, {"$set" => {$1 => Wrapper.wrap(args[0])}})
+        set $1, Wrapper.wrap(args[0])
       else
         Wrapper.unwrap(self.class.collection.find_one(@__candy, :fields => [name.to_s])[name.to_s])
       end
     end
     
+    # Given either a property/value pair or a hash (which can contain several property/value pairs), sets those
+    # values in Mongo using the atomic $set. The first form is functionally equivalent to simply using the
+    # magic assignment operator; i.e., `me.set(:foo, 'bar')` is the same as `me.foo = bar`.
+    def set(*args)
+      if args.length > 1  # This is the property/value form
+        hash = {args[0] => args[1]}
+      else
+        hash = args[0]
+      end
+      update '$set' => hash
+    end
+    
+    # Given a Candy array property, appends a value or values to the end of that array using the atomic $push.  
+    # (Note that we don't actually check the property to make sure it's an array and $push is valid. If it isn't, 
+    # this operation will silently fail.)
+    def push(property, *values)
+      values.each do |value|
+        update '$push' => {property => Wrapper.wrap(value)}
+      end
+    end
+    
+    # Given a Candy integer property, increments it by the given value (which defaults to 1) using the atomic $inc.
+    # (Note that we don't actually check the property to make sure it's an integer and $inc is valid. If it isn't, 
+    # this operation will silently fail.)
+    def inc(property, increment=1)
+      update '$inc' => {property => increment}
+    end
   private
   
     # Returns the secret decoder ring buried in the arguments to "new"
@@ -85,6 +112,11 @@ module Candy
         args.push candidate if candidate
         nil
       end
+    end
+    
+    # Updates the Mongo document with the given element or elements.
+    def update(element)
+      self.class.collection.update({"_id" => @__candy}, element)
     end
     
   end
