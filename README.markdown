@@ -7,7 +7,7 @@ Candy aims to be the simplest possible ORM for the MongoDB database. If MongoMap
 Other distinctive features:
 
 * Sane defaults are used for the connection, database, and collection.  If you're running Mongo locally you can have zero configuration.
-* Mongo's atomic update operators (in particular $set) are used so that updates are as fast as possible and don't clobber unrelated fields.
+* Candy has no `save` or `save!` method. Property changes are persisted to the database immediately. Mongo's atomic update operators (in particular $set) are used so that updates are as fast as possible and don't clobber unrelated fields.
 * Candy properties have _no memory._ Every value retrieval goes against the database, so your objects are never stale. (You can always implement caching via Ruby attributes if you want it.)
 * Query result sets are Enumerator objects on top of Mongo cursors. If you're using Ruby 1.9 you'll get very efficient enumeration using fibers. 
 * Whole documents are never written nor read. Queries only return the **_id** field, and getting or setting a property only accesses that property.
