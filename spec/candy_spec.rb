@@ -44,6 +44,18 @@ describe "Candy" do
     @this.licks.should == 7
   end
   
+  it "wraps objects" do
+    o = Object.new
+    @this.object = o
+    @verifier.find_one["object"]["__object_"]["class"].should == "Object"
+  end
+  
+  it "unwraps objects" do
+    @verifier.update({:_id => @this.id}, {:center => {"__object_" => {:class => "Object", :ivars => {"@foo" => "bar"}}}})
+    @this.center.should be_an(Object)
+    @this.center.instance_variable_get(:@foo).should == "bar"
+  end
+  
   describe "retrieval" do
     it "can find a record by its ID" do
       @this.licks = 10
@@ -109,6 +121,7 @@ describe "Candy" do
     end
       
   end
+  
   
   
   after(:each) do

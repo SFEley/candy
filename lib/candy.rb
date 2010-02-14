@@ -69,9 +69,9 @@ module Candy
     # Retrieving any unknown attribute will return that value from this record in the Mongo collection.
     def method_missing(name, *args, &block)
       if name =~ /(.*)=$/  # We're assigning
-        self.class.collection.update({"_id" => @__candy}, {"$set" => {$1 => args[0]}})
+        self.class.collection.update({"_id" => @__candy}, {"$set" => {$1 => Wrapper.wrap(args[0])}})
       else
-        self.class.collection.find_one(@__candy, :fields => [name.to_s])[name.to_s]
+        Wrapper.unwrap(self.class.collection.find_one(@__candy, :fields => [name.to_s])[name.to_s])
       end
     end
     
