@@ -164,6 +164,39 @@ describe "Candy" do
     end
   end
   
+  describe "timestamp" do
+    it "can be set on creation" do
+      Zagnut.class_eval("timestamp :create")
+      z = Zagnut.new
+      z.created_at.should be_a(Time)
+      z.updated_at.should be_nil
+    end
+    
+    it "can be set on modification" do
+      Zagnut.class_eval("timestamp :update")
+      z = Zagnut.new
+      z.created_at.should be_nil
+      z.updated_at.should be_nil
+      z.bites = 11
+      z.created_at.should be_nil
+      z.updated_at.should be_a(Time)
+    end
+    
+    it "sets both by default" do
+      Zagnut.class_eval("timestamp")
+      z = Zagnut.new
+      z.bites = 11
+      z.created_at.should be_a(Time)
+      z.updated_at.should be_a(Time)
+    end
+    
+    
+    after(:each) do
+      Zagnut.class_eval("timestamp nil")
+    end
+    
+  end
+  
   after(:each) do
     Zagnut.collection.remove
   end

@@ -8,6 +8,8 @@ module Candy
   module ClassMethods
     include Crunch::ClassMethods
     
+    attr_reader :stamp_create, :stamp_update
+    
     # Retrieves an object from Mongo by its ID and returns it.  Returns nil if the ID isn't found in Mongo.
     def find(id)
       if collection.find_one(id)
@@ -38,6 +40,14 @@ module Candy
       end  
     end
     
+    # Configures objects to set `created_at` and `updated_at` properties at the appropriate times.
+    # Pass `:create` or `:update` to limit it to just one or the other.  Defaults to both.
+    def timestamp(*args)
+      args = [:create, :update] if args.empty?
+      @stamp_create = args.include?(:create)
+      @stamp_update = args.include?(:update)
+    end
+    
   private
     # Returns a hash of options matching those enabled in Mongo::Collection#find, if any of them exist
     # in the set of search conditions.
@@ -56,7 +66,8 @@ module Candy
     
     # We push ourselves into the DB before going on with our day.
     def initialize(*args, &block)
-      @__candy = check_for_candy(args) || self.class.collection.insert({})
+      @__candy = check_for_candy(args) || 
+        self.class.collection.insert(self.class.stamp_create ? {:created_at => Time.now.utc} : {})
       super
     end
 
@@ -84,6 +95,7 @@ module Candy
       else
         hash = args[0]
       end
+      hash.merge!(:updated_at => Time.now.utc) if self.class.stamp_update
       update '$set' => hash
     end
     
