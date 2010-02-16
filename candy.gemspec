@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{candy}
-  s.version = "0.0.2"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
-  s.date = %q{2010-01-20}
+  s.date = %q{2010-02-16}
   s.description = %q{Candy is a lightweight ORM for the MongoDB database. If MongoMapper is Rails, Candy is Sinatra. 
 It provides a module you mix into any class, enabling the class to connect to Mongo on its own
 and push its objects into a collection. Candied objects act like OpenStructs, allowing attributes
@@ -20,20 +20,23 @@ converts almost any object for assignment to any attribute.
   s.email = %q{sfeley@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.markdown"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
-     "README.rdoc",
+     "README.markdown",
      "Rakefile",
      "VERSION",
      "candy.gemspec",
      "lib/candy.rb",
      "lib/candy/crunch.rb",
      "lib/candy/exceptions.rb",
+     "lib/candy/qualified_const_get.rb",
+     "lib/candy/wrapper.rb",
      "spec/candy/crunch_spec.rb",
+     "spec/candy/wrapper_spec.rb",
      "spec/candy_spec.rb",
      "spec/spec.opts",
      "spec/spec.watchr",
@@ -46,6 +49,7 @@ converts almost any object for assignment to any attribute.
   s.summary = %q{The simplest MongoDB ORM}
   s.test_files = [
     "spec/candy/crunch_spec.rb",
+     "spec/candy/wrapper_spec.rb",
      "spec/candy_spec.rb",
      "spec/spec_helper.rb"
   ]
