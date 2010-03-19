@@ -96,6 +96,13 @@ describe "Candy" do
       @this.pieces = 11
       Zagnut.first("pieces" => 5).should be_nil
     end
+    
+    it "can get a single object by attribute method" do
+      @this.color = "blue"
+      @this.smushy = true
+      that = Zagnut.color("blue")
+      that.should be_smushy
+    end
   end
   
   describe "collections" do
@@ -190,6 +197,42 @@ describe "Candy" do
       z.updated_at.should be_a(Time)
     end
     
+    describe "question-mark methods" do
+      before(:each) do
+        @this.tasty = true
+        @this.sour = false
+        @this.smelly = nil
+        @this.color = "yellow"
+        @this.pieces = 19
+        
+      end
+      
+      it "are true for true values" do
+        @this.should be_tasty
+      end
+      
+      it "are true for string values" do
+        @this.color?.should be_true
+      end
+      
+      it "are true for numeric values" do
+        @this.pieces?.should be_true
+      end
+      
+      it "are false for false values" do
+        @this.should_not be_sour
+      end
+      
+      it "are false for nil values" do
+        @this.should_not be_smelly
+      end
+      
+      it "are false for undefined values" do
+        @this.should_not be_loud
+      end
+      
+      
+    end
     
     after(:each) do
       Zagnut.class_eval("timestamp nil")

@@ -48,6 +48,18 @@ module Candy
       @stamp_update = args.include?(:update)
     end
     
+    # Deep magic!  Finds and returns a single object by the named attribute.
+    def method_missing(name, *args, &block)
+      if args.size == 1 or args.size == 2     # If we don't have a value, or have more than
+        search = {name => args.shift}         # just a simple options hash, this must not be for us.
+        search.merge!(args.shift) if args[0]  # We might have other conditions
+        first(search)
+      else
+        super
+      end
+    end
+    
+    
   private
     # Returns a hash of options matching those enabled in Mongo::Collection#find, if any of them exist
     # in the set of search conditions.
@@ -81,6 +93,8 @@ module Candy
     def method_missing(name, *args, &block)
       if name =~ /(.*)=$/  # We're assigning
         set $1, Wrapper.wrap(args[0])
+      elsif name =~ /(.*)\?$/  # We're asking
+        true if self.send($1)
       else
         Wrapper.unwrap(self.class.collection.find_one(@__candy, :fields => [name.to_s])[name.to_s])
       end
