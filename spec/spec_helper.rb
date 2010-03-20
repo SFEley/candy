@@ -5,6 +5,10 @@ require 'spec'
 require 'spec/autorun'
 require 'mocha'
 
+
+# Support methods
+Dir[File.join(File.dirname(__FILE__), 'support', '*.rb')].each {|f| require f}
+
 Spec::Runner.configure do |config|
   config.mock_with :mocha
   

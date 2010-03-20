@@ -1,6 +1,11 @@
+# Make me one with everything...
+Dir[File.join(File.dirname(__FILE__), 'candy', '*.rb')].each {|f| require f}
+
 require 'candy/exceptions'
 require 'candy/crunch'
 require 'candy/wrapper'
+require 'candy/piece'
+require 'candy/collection'
 
 # Mix me into your classes and Mongo will like them!
 module Candy
@@ -58,7 +63,6 @@ module Candy
         super
       end
     end
-    
     
   private
     # Returns a hash of options matching those enabled in Mongo::Collection#find, if any of them exist
@@ -147,8 +151,11 @@ module Candy
     
   end
   
+  
   def self.included(receiver)
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
   end
+  
+
 end
