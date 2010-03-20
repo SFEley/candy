@@ -82,7 +82,7 @@ module Candy
         when Mongo::Collection
           @collection = val
         when String
-          @collection = db.create_collection(val)
+          @collection = db.collection(val)
         when nil
           @collection = nil
         else
@@ -92,7 +92,7 @@ module Candy
       
       # Returns the collection you gave, or creates a default collection named for the current class.
       def collection
-        @collection ||= db.create_collection(name)
+        @collection ||= db.collection(name)
       end
       
       # Creates an index on the specified property, with an optional direction specified as either :asc or :desc.

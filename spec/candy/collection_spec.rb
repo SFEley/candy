@@ -14,8 +14,10 @@ describe Candy::Collection do
     @the_other.color = "blue"
     @the_other.pieces = 7
     @the_other.weight = 0
+    puts "@this IS IN COLLECTION #{@this.class.collection.inspect}"
+    puts "ZAGNUT HAS: #{@this.class.collection.count} THINGS"
   end
-  
+    
   it "can get all objects in a collection" do
     those = Zagnuts.all
     those.count.should == 3

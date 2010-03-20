@@ -2,6 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Candy::Piece do
   
+  class Nougat
+    attr_accessor :foo
+  end
+  
   before(:all) do
     @verifier = Zagnut.collection
   end
@@ -51,26 +55,29 @@ describe Candy::Piece do
   end
   
   it "wraps objects" do
-    o = Object.new
-    @this.object = o
-    @verifier.find_one["object"]["__object_"]["class"].should == "Object"
+    nougat = Nougat.new
+    nougat.foo = 5
+    @this.center = nougat
+    @verifier.find_one["center"]["__object_"]["class"].should == Nougat.name
   end
   
   it "unwraps objects" do
-    @verifier.update({:_id => @this.id}, {:center => {"__object_" => {:class => "Object", :ivars => {"@foo" => "bar"}}}})
-    @this.center.should be_an(Object)
-    @this.center.instance_variable_get(:@foo).should == "bar"
+    center = Nougat.new
+    center.foo = :bar
+    @verifier.update({:_id => @this.id}, {:center => {"__object_" => {:class => Nougat.name, :ivars => {"@foo" => 'bar'}}}})
+    @this.center.should be_a(Nougat)
+    @this.center.instance_variable_get(:@foo).should == 'bar'
   end
   
   describe "retrieval" do
     it "can find a record by its ID" do
       @this.licks = 10
-      that = Zagnut.find(@this.id)
+      that = Zagnut.first(@this.id)
       that.licks.should == 10
     end
     
     it "roundtrips across identical objects" do
-      that = Zagnut.find(@this.id)
+      that = Zagnut.first(@this.id)
       @this.calories = 7500
       that.calories.should == 7500
     end
@@ -99,6 +106,8 @@ describe Candy::Piece do
       that.should be_smushy
     end
   end
+  
+  
   
   after(:each) do
     Zagnut.collection.remove
