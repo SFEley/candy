@@ -12,7 +12,6 @@ module Candy
     UP_SORTS = [Mongo::ASCENDING, 'ascending', 'asc', :ascending, :asc, 1, :up]
     DOWN_SORTS = [Mongo::DESCENDING, 'descending', 'desc', :descending, :desc, -1, :down]
     
-    include Crunch::InstanceMethods
     include Enumerable
 
     module ClassMethods

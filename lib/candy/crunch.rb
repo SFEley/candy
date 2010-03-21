@@ -2,47 +2,83 @@ require 'mongo'
 require 'etc'  # To get the current username for database default
 
 module Candy
+  # Our option accessors live here so that someone could include just the
+  # 'candy/crunch' module and make it standalone.
+  
+  # Overrides the host and resets the connection, db, and collection.
+  def self.host=(val)
+    @connection = nil
+    @host = val
+  end
+  
+  # Overrides the port and resets the connection, db, and collection.
+  def self.port=(val)
+    @connection = nil
+    @port = val
+  end
+  
+  # Overrides the options hash and resets the connection, db, and collection.
+  def self.connection_options=(val)
+    @connection = nil
+    @connection_options = val
+  end
+  
+  # Passed to the default connection.  If not set, Mongo's default of localhost will be used.
+  def self.host
+    @host
+  end
+  
+  # Passed to the default connection.  If not set, Mongo's default of 27017 will be used.
+  def self.port
+    @port
+  end
+  
+  # A hash passed to the default connection.  See the Mongo::Connection documentation for valid options.
+  def self.connection_options
+    @connection_options ||= {}
+  end
+  
+  # First clears any collection and database we're talking to, then accepts a connection you provide.
+  # You're responsible for your own host, port and options if you use this.
+  def self.connection=(val)
+    self.db = nil
+    @connection = val
+  end
+  
+  # Returns the connection you gave, or creates a default connection to the default host and port.
+  def self.connection
+    @connection ||= Mongo::Connection.new(host, port, connection_options)
+  end
+  
+  # Accepts a database you provide. You can provide a Mongo::DB object or a string with the database
+  # name. If you provide a Mongo::DB object, the default connection is not used, and the :strict flag
+  # should be false or default collection lookup will fail.
+  def self.db=(val)
+    case val
+    when Mongo::DB
+      @db = val
+    when String
+      @db = Mongo::DB.new(val, connection)
+    when nil
+      @db = nil
+    else 
+      raise ConnectionError, "The db attribute needs a Mongo::DB object or a name string."
+    end
+  end
+  
+  # Returns the database you gave, or creates a default database named for your username (or 'candy' if it
+  # can't find a username).
+  def self.db
+    @db ||= Mongo::DB.new(Etc.getlogin || 'candy', connection, :strict => false)
+  end
   
   # All of the hard crunchy bits that connect us to a collection within a Mongo database.
   module Crunch
     module ClassMethods
-      
-      # Passed to the default connection.  It uses the $MONGO_HOST global if that's set and you don't override it.
-      def host
-        @host ||= $MONGO_HOST
-      end
-
-      # Passed to the default connection.  It uses the $MONGO_PORT global if that's set and you don't override it.
-      def port
-        @port ||= $MONGO_PORT
-      end
-      
-      # A hash passed to the default connection. It uses the $MONGO_OPTIONS global if that's set and you don't override it.
-      def options
-        @options ||= ($MONGO_OPTIONS || {})
-      end
-      
-      # Overrides the host and resets the connection, db, and collection.
-      def host=(val)
-        @connection = nil
-        @host = val
-      end
-      
-      # Overrides the port and resets the connection, db, and collection.
-      def port=(val)
-        @connection = nil
-        @port = val
-      end
-
-      # Overrides the options hash and resets the connection, db, and collection.
-      def options=(val)
-        @connection = nil
-        @options = val
-      end
-      
-      # Returns the connection you gave, or creates a default connection to the default host and port.
+            
+      # Returns the connection you gave, or uses the application-level Candy collection.
       def connection
-        @connection ||= Mongo::Connection.new(host, port, options)
+        @connection ||= Candy.connection
       end
        
       # First clears any collection and database we're talking to, then accepts a connection you provide.
@@ -69,10 +105,9 @@ module Candy
         end
       end
       
-      # Returns the database you gave, or creates a default database named for your username (or 'candy' if it
-      # can't find a username).
+      # Returns the database you gave, or uses the application-level Candy database.
       def db
-        @db ||= Mongo::DB.new($MONGO_DB || Etc.getlogin || 'candy', connection, :strict => false)
+        @db ||= Candy.db
       end
       
       # Accepts either a Mongo::Collection object or a string with the collection name.  If you provide a 
@@ -109,13 +144,9 @@ module Candy
       end
     end
     
-    module InstanceMethods
-      
-    end
     
     def self.included(receiver)
       receiver.extend         ClassMethods
-      receiver.send :include, InstanceMethods
     end
   end
 end

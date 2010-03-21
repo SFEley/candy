@@ -14,18 +14,17 @@ describe Candy::Collection do
     @the_other.color = "blue"
     @the_other.pieces = 7
     @the_other.weight = 0
-    sleep(0.1)  # We need to wait for the DB to catch up - hmph on consistency
   end
-    
-  it "can get all objects in a collection" do
-    sleep(2)  # Seriously, this is nuts.
-    those = Zagnuts.all
-    those.count.should == 3
-  end
+
   
   it "can get all objects matching a search condition" do
     those = Zagnuts.color("red")
     those.count.should == 2
+  end
+    
+  it "can get all objects in a collection" do
+    those = Zagnuts.all
+    those.count.should == 3
   end
   
   it "still returns if nothing matches" do

@@ -7,14 +7,13 @@ require 'mocha'
 
 
 # Support methods
-$MONGO_DB = 'candy_test'
+Candy.db = 'candy_test'
 Dir[File.join(File.dirname(__FILE__), 'support', '*.rb')].each {|f| require f}
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
   
   config.before(:all) do
-    $MONGO_DB = 'candy_test'
   end
     
   config.after(:all) do

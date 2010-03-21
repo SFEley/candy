@@ -11,7 +11,7 @@ describe Candy::Crunch do
   describe "connection" do
     before(:each) do
       # Make sure we don't waste time making bogus connections
-      PeanutBrittle.options[:connect] = false
+      Candy.connection_options[:connect] = false
     end
 
     it "takes yours if you give it one" do
@@ -24,39 +24,22 @@ describe Candy::Crunch do
       PeanutBrittle.connection.nodes.should == [["localhost", 27017]]
     end
     
-    it "uses the host you provide" do
-      PeanutBrittle.host = 'example.org'
-      PeanutBrittle.connection.nodes.should == [["example.org", 27017]]
-    end
 
-    it "uses the port you provide" do
-      PeanutBrittle.host = 'localhost'
-      PeanutBrittle.port = 3000
-      PeanutBrittle.connection.nodes.should == [["localhost", 3000]]
-    end
-
-    it "uses any options you provide" do
-      l = Logger.new(STDOUT)
-      PeanutBrittle.options[:logger] = l
-      PeanutBrittle.connection.logger.should == l
-    end
-
-    it "uses the $MONGO_HOST setting if you don't override it" do
-      $MONGO_HOST = 'example.net'
+    it "uses the Candy.host setting if you don't override it" do
+      Candy.host = 'example.net'
       PeanutBrittle.connection.nodes.should == [["example.net", 27017]]
     end
 
-    it "uses the $MONGO_PORT setting if you don't override it" do
-      PeanutBrittle.host = 'localhost'
-      $MONGO_PORT = 33333
+    it "uses the Candy.port setting if you don't override it" do
+      Candy.host = 'localhost'
+      Candy.port = 33333
       PeanutBrittle.connection.nodes.should == [["localhost", 33333]]
     end
 
-    it "uses the $MONGO_OPTIONS setting if you don't override it" do
+    it "uses the Candy.connection_options setting if you don't override it" do
       l = Logger.new(STDOUT)
-      PeanutBrittle.options = nil  # Gotta be careful of our order on this one
-      $MONGO_OPTIONS = {:logger => l, :connect => false}
-      PeanutBrittle.connection.logger.should == $MONGO_OPTIONS[:logger]
+      Candy.connection_options = {:logger => l, :connect => false}
+      PeanutBrittle.connection.logger.should == Candy.connection_options[:logger]
     end   
     
     it "clears the database when you set it" do
@@ -66,18 +49,16 @@ describe Candy::Crunch do
     end
 
     after(:each) do
-      $MONGO_HOST = nil
-      $MONGO_PORT = nil
-      $MONGO_OPTIONS = nil
-      PeanutBrittle.host = nil
-      PeanutBrittle.port = nil
-      PeanutBrittle.options = nil
+      Candy.host = nil
+      Candy.port = nil
+      Candy.connection_options = nil
+      PeanutBrittle.connection = nil
     end
   end
   
   describe "database" do
     before(:each) do
-      $MONGO_DB = nil
+      Candy.db = nil
     end
     
     it "takes yours if you give it one" do
@@ -95,8 +76,8 @@ describe Candy::Crunch do
       lambda{PeanutBrittle.db = 5}.should raise_error(Candy::ConnectionError, "The db attribute needs a Mongo::DB object or a name string.")
     end
   
-    it "uses the $MONGO_DB setting if you don't override it" do
-      $MONGO_DB = 'foobar'
+    it "uses the Candy.db setting if you don't override it" do
+      Candy.db = 'foobar'
       PeanutBrittle.db.name.should == 'foobar'
     end
   
@@ -118,7 +99,7 @@ describe Candy::Crunch do
     end
     
     after(:all) do
-      $MONGO_DB = 'candy_test'  # Get back to our starting point
+      Candy.db = 'candy_test'  # Get back to our starting point
     end
   end
   

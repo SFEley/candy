@@ -27,7 +27,6 @@ module Candy
       
     end
     
-    include Crunch::InstanceMethods
     
     
     # We push ourselves into the DB before going on with our day.
