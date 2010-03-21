@@ -14,11 +14,11 @@ describe Candy::Collection do
     @the_other.color = "blue"
     @the_other.pieces = 7
     @the_other.weight = 0
-    puts "@this IS IN COLLECTION #{@this.class.collection.inspect}"
-    puts "ZAGNUT HAS: #{@this.class.collection.count} THINGS"
+    sleep(0.1)  # We need to wait for the DB to catch up - hmph on consistency
   end
     
   it "can get all objects in a collection" do
+    sleep(2)  # Seriously, this is nuts.
     those = Zagnuts.all
     those.count.should == 3
   end
