@@ -51,6 +51,12 @@ module Candy
       @__candy
     end
     
+    # Objects are equal if they point to the same MongoDB record (unless both have IDs of nil, in which case 
+    # they're never equal.)
+    def ==(subject)
+      self.id == subject.id
+    end
+    
     # Candy's magic ingredient. Assigning to any unknown attribute will push that value into the Mongo collection.
     # Retrieving any unknown attribute will return that value from this record in the Mongo collection.
     def method_missing(name, *args, &block)

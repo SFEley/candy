@@ -69,6 +69,11 @@ describe Candy::Piece do
     @this.center.instance_variable_get(:@foo).should == 'bar'
   end
   
+  it "considers objects equal if they point to the same MongoDB ref" do
+    that = Zagnut(@this.id)
+    that.should == @this
+  end
+
   describe "retrieval" do
     it "can find a record by its ID" do
       @this.licks = 10

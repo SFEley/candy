@@ -7,8 +7,3 @@ require 'candy/wrapper'
 require 'candy/piece'
 require 'candy/collection'
 
-# Mix me into your classes and Mongo will like them!
-module Candy
-  
-
-end
