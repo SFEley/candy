@@ -1,3 +1,5 @@
+require 'candy/factory'
+
 module Candy
   
   # Handles autopersistence and single-object retrieval for an arbitrary Ruby class.
@@ -9,6 +11,7 @@ module Candy
 
       # Retrieves a single object from Mongo by its search attributes, or nil if it can't be found.
       def first(conditions={})
+        conditions = {'_id' => conditions} unless conditions.is_a?(Hash)
         if record = collection.find_one(conditions, {:fields => ['_id']})
           self.new({:_candy => record['_id']})
         end
@@ -23,6 +26,14 @@ module Candy
         else
           super
         end
+      end
+      
+    private
+      
+      # Creates a method in the same namespace as the included class that points to
+      # 'first', for easier semantics.
+      def self.extended(receiver)
+        Factory.magic_method(receiver, 'first', 'conditions={}')
       end
       
     end

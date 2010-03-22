@@ -1,5 +1,4 @@
 require 'candy/crunch'
-require 'active_support'
 
 module Candy
   
@@ -23,27 +22,46 @@ module Candy
       # the namespace of the current class.  (This makes it easy to name
       # sibling classes.)
       def collects(something)
-        collectible = name.sub(/#{name.demodulize}$/, something.to_s.classify)
+        collectible = namespace + camelcase(something)
         self.collection = collectible
         @_candy_piece = Kernel.qualified_const_get(collectible)
       end
       
-      def all
-        self.new
+      def all(options={})
+        self.new(options)
       end
       
       def method_missing(name, *args, &block)
         coll = self.new
         coll.send(name, *args, &block)
       end  
-    end
+    private
+      # Retrieves the 'BlahModule::BleeModule::' part of the class name, so that we
+      # can put other things in the same namespace.
+      def namespace
+        name[/^.*::/] || '' # Hooray for greedy matching
+      end
+
+      # Modified from ActiveSupport (http://rubyonrails.org)
+      def camelcase(stringy)
+        stringy.to_s.gsub(/(?:^|_)(.)/) {$1.upcase}
+      end
+      
+      # Creates a method in the same namespace as the included class that points to
+      # 'all', for easier semantics.
+      def self.extended(receiver)
+        Factory.magic_method(receiver, 'all', 'conditions={}')
+      end
+      
+    end  # Here endeth the ClassMethods module
    
     def initialize(*args, &block)
+      conditions = args.pop || {}
       super
       @_candy_query = {}
-      if args[0].is_a?(Hash)
-        @_candy_options = {:fields => '_id'}.merge(extract_options(args[0]))
-        @candy_query.merge!(args[0])
+      if conditions.is_a?(Hash)
+        @_candy_options = {:fields => '_id'}.merge(extract_options(conditions))
+        @_candy_query.merge!(conditions)
       else
         @_candy_options = {:fields => '_id'}
       end
@@ -64,6 +82,7 @@ module Candy
         self
       end
     end
+      
     
     # Makes our collection enumerable.  This relies heavily on Mongo::Cursor methods --
     # we only reimplement it so that the objects we return can be Candy objects.
@@ -108,6 +127,7 @@ module Candy
           
           
   private
+      
     def refresh_cursor
       @_candy_cursor = self.class.collection.find(@_candy_query, @_candy_options)
     end

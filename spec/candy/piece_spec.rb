@@ -105,8 +105,42 @@ describe Candy::Piece do
       that = Zagnut.color("blue")
       that.should be_smushy
     end
+    
+    it "can get the object by a method at the top level" do
+      @this.intensity = :Yowza
+      that = Zagnut(@this.id)
+      that.intensity.should == :Yowza
+    end
+    
+    # Test class for scoped magic method generation
+    class BabyRuth
+      include Candy::Piece
+    end
+    
+    it "can get the object by a method within the enclosing namespace" do
+      foo = BabyRuth.new
+      foo.color = 'green'
+      bar = BabyRuth(foo.id)
+      bar.color.should == 'green'
+    end
+    
+    # Test class to verify magic method generation doesn't override anything
+    def Jawbreaker(param=nil)
+      "Broken!"
+    end
+    
+    class Jawbreaker
+      include Candy::Piece
+    end
+    
+    it "doesn't create a namespace method if one already exists" do
+      too = Jawbreaker.new
+      too.calories = 55
+      tar = Jawbreaker(too.id)
+      tar.should == 'Broken!'
+    end
+    
   end
-  
   
   
   after(:each) do
