@@ -16,6 +16,18 @@ module Candy
           self.new({:_candy => record['_id']})
         end
       end
+      
+      # Performs an 'upsert' into the collection.  The first parameter is a field name or array of fields
+      # which act as our "key" fields -- if a document in the system matches the values from the hash,
+      # it'll be updated.  Otherwise, an insert will occur.  The second parameter tells us what to set or
+      # insert.
+      def update(key_or_keys, fields)
+        search_keys = {}
+        Array(key_or_keys).each do |key|
+          search_keys[key] = Wrapper.wrap(fields[key])
+        end
+        collection.update search_keys, fields, :upsert => true
+      end
 
       # Deep magic!  Finds and returns a single object by the named attribute.
       def method_missing(name, *args, &block)

@@ -147,6 +147,40 @@ describe Candy::Piece do
     
   end
   
+  describe "updates" do
+    before(:each) do
+      @this.ounces = 17
+      @this.crunchy = :very
+      @that = Zagnut.new
+      @that.ounces = 11
+      @that.crunchy = :very
+    end
+    
+    it "will insert a document if the key field's value isn't found" do
+      Zagnut.update(:ounces, {ounces: 15, crunchy: :not_very, flavor: 'butterscotch'})
+      @verifier.count.should == 3
+      Zagnut.ounces(15).flavor.should == 'butterscotch'
+    end
+    
+    it "will update a document if the key field's value is found" do
+      Zagnut.update(:ounces, {ounces: 11, crunchy: :barely, salt: 0})
+      @verifier.count.should == 2
+      @that.crunchy.should == :barely
+    end
+    
+    it "can match on multiple keys" do
+      Zagnut.update([:crunchy, :ounces], {ounces: 17, crunchy: :very, calories: 715})
+      @verifier.count.should == 2
+      @this.calories.should == 715
+    end
+      
+    it "won't match on multiple keys if they aren't all found" do
+      Zagnut.update([:crunchy, :ounces], {ounces: 11, crunchy: :not_quite, color: 'brown'})
+      @verifier.count.should == 3
+      Zagnut.crunchy(:not_quite).color.should == 'brown'
+    end
+  end
+  
   
   after(:each) do
     Zagnut.collection.remove
