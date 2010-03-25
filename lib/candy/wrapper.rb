@@ -52,16 +52,27 @@ module Candy
       array.map {|element| wrap(element)}
     end
     
-    # Takes a hash and returns it with values wrapped. Keys are left alone.
+    # Takes a hash and returns it with values wrapped. Keys are converted to strings, and 
+    # wrapped with single quotes if they were already strings.  (So that we can easily tell
+    # hash keys from string keys later on.)
     def self.wrap_hash(hash)
       wrapped = {}
-      hash.each {|k, v| wrapped[k] = wrap(v)}
+      hash.each do |key, value|  
+        case key
+        when Symbol
+          wrapped[key.to_s] = wrap(value)
+        when String
+          wrapped["'#{key}'"] = wrap(value)
+        else
+          wrapped[wrap(key)] = wrap(value)
+        end
+      end
       wrapped
     end
     
     # Returns a string that's distinctive enough for us to unwrap later and produce the same symbol.
     def self.wrap_symbol(symbol)
-      "__sym_" + symbol.to_s
+      "__:" + symbol.to_s
     end
     
     # Returns a nested hash containing the class and instance variables of the object.  It's not the
@@ -90,17 +101,27 @@ module Candy
         end
       when Array
         thing.map {|element| unwrap(element)}
-      when /^__sym_(.+)/
+      when /^__:(.+)/
         $1.to_sym
       else
         thing
       end
     end
     
-    # Traverses the hash, unwrapping both keys and values.  Returns the hash that results.
+    # Traverses the hash, unwrapping values and converting keys back to symbols.  Returns 
+    # the hash that results.
     def self.unwrap_hash(hash)
       unwrapped = {}
-      hash.each {|k,v| unwrapped[unwrap(k)] = unwrap(v)}
+      hash.each do |key, value|
+        case key
+        when /^'(.+)'$/
+          unwrapped[$1] = unwrap(value)
+        when String
+          unwrapped[key.to_sym] = unwrap(value)
+        else
+          unwrapped[unwrap(key)] = unwrap(value)
+        end
+      end
       unwrapped
     end
     
