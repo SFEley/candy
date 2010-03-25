@@ -93,9 +93,9 @@ module Candy
         Wrapper.wrap(a).should == a
       end
     
-      it "wraps a hash's keys" do
+      it "leaves keys alone" do
         h = {"foo" => "bar", :yoo => "yar"}
-        Wrapper.wrap(h).keys.should == ["foo", "__sym_yoo"]
+        Wrapper.wrap(h).keys.should == ["foo", :yoo]
       end
   
       it "wraps a hash's values" do

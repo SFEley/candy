@@ -47,19 +47,19 @@ module Candy
       end
     end
     
-    # Takes an array and returns the same array with unsafe objects wrapped
+    # Takes an array and returns the same array with unsafe objects wrapped.
     def self.wrap_array(array)
       array.map {|element| wrap(element)}
     end
     
-    # Takes a hash and returns it with both keys and values wrapped
+    # Takes a hash and returns it with values wrapped. Keys are left alone.
     def self.wrap_hash(hash)
       wrapped = {}
-      hash.each {|k, v| wrapped[wrap(k)] = wrap(v)}
+      hash.each {|k, v| wrapped[k] = wrap(v)}
       wrapped
     end
     
-    # Returns a string that's distinctive enough for us to unwrap later and produce the same symbol
+    # Returns a string that's distinctive enough for us to unwrap later and produce the same symbol.
     def self.wrap_symbol(symbol)
       "__sym_" + symbol.to_s
     end

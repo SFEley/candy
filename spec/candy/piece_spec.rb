@@ -17,6 +17,11 @@ describe Candy::Piece do
   it "inserts a document immediately" do
     @this.id.should be_a(Mongo::ObjectID)
   end
+  
+  it "can be given a hash of data to insert immediately" do
+    that = Zagnut.new({calories: 500, morsels: "chewy"})
+    @verifier.find_one(calories: 500)["morsels"].should == "chewy"
+  end
 
   it "saves any attribute it doesn't already handle to the database" do
     @this.bite = "Tasty!"

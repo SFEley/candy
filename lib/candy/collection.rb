@@ -88,14 +88,14 @@ module Candy
     # we only reimplement it so that the objects we return can be Candy objects.
     def each
       while this = @_candy_cursor.next_document
-        yield self.class._candy_piece.new(:_candy => this['_id'])
+        yield self.class._candy_piece.new(this['_id'])
       end
     end
     
     # Get our next document as a Candy object, if there is one.
     def next
       if this = @_candy_cursor.next_document
-        self.class._candy_piece.new(:_candy => this['_id'])
+        self.class._candy_piece.new(this['_id'])
       end
     end
     

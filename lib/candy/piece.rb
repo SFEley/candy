@@ -13,7 +13,7 @@ module Candy
       def first(conditions={})
         conditions = {'_id' => conditions} unless conditions.is_a?(Hash)
         if record = collection.find_one(conditions, {:fields => ['_id']})
-          self.new({:_candy => record['_id']})
+          self.new(record['_id'])
         end
       end
       
@@ -54,7 +54,18 @@ module Candy
     
     # We push ourselves into the DB before going on with our day.
     def initialize(*args, &block)
-      @__candy = check_for_candy(args) || self.class.collection.insert({})
+      candidate = args.pop  # Take our data off the top
+      @__candy = case candidate
+      when Mongo::ObjectID
+        candidate   # Ding!  An already-existing object.  Just remember it.
+      when Hash
+        self.class.collection.insert(Wrapper.wrap(candidate))  # Use this data to build a new record.
+      when nil
+        self.class.collection.insert({})  # No parameters passed; just insert a blank document so we have an ID.
+      else  
+        self.class.collection.insert({})
+        args.push candidate  # If it's some other parameter, best just put it back and pass it to 'super'.
+      end
       super
     end
     
@@ -110,8 +121,10 @@ module Candy
     # (Note that we don't actually check the property to make sure it's an array and $push is valid. If it isn't, 
     # this operation will silently fail.)
     def push(property, *values)
-      values.each do |value|
-        update '$push' => {property => Wrapper.wrap(value)}
+      if values.count == 1
+        update '$push' => {property => Wrapper.wrap(values[0])}
+      else
+        update '$pushAll' => {property => Wrapper.wrap(values)}
       end
     end
 
@@ -119,12 +132,7 @@ module Candy
     
     # Returns the secret decoder ring buried in the arguments to "new"
     def check_for_candy(args)
-      if (candidate = args.pop).is_a?(Hash) and candidate[:_candy]
-        candidate[:_candy]
-      else # This must not be for us, so put it back  
-        args.push candidate if candidate
-        nil
-      end
+      args[-1].delete(:_candy) if args[-1].is_a?(Hash)
     end
     
     def self.included(receiver)
