@@ -14,9 +14,16 @@ describe Candy::Piece do
     @this = Zagnut.new
   end
   
-  it "inserts a document immediately" do
+
+  it "lazy inserts" do
+    @this.id.should be_nil
+  end
+  
+  it "knows its ID after inserting" do
+    @this.name = 'Zagnut'
     @this.id.should be_a(Mongo::ObjectID)
   end
+  
   
   it "can be given a hash of data to insert immediately" do
     that = Zagnut.new({calories: 500, morsels: "chewy"})
@@ -29,8 +36,10 @@ describe Candy::Piece do
   end
 
   it "retrieves any attribute it doesn't already know about from the database" do
-    @verifier.update({:_id => @this.id}, {:chew => "Yummy!", :bite => "Ouch."})
-    @this.chew.should == "Yummy!"
+    @this.chew = "Munchy!"
+    @verifier.update({:_id => @this.id}, {:chew => "Yummy!"})
+    that = Zagnut(@this.id)
+    that.chew.should == "Yummy!"
   end
 
   it "can roundtrip effectively" do
@@ -48,16 +57,6 @@ describe Candy::Piece do
     @this.licks.should == 7
   end
   
-  it "can set properties explicity" do
-    @this.set(:licks, 17)
-    @this.licks.should == 17
-  end
-  
-  it "can set properties from a hash" do
-    @this.set(:licks => 19, :center => -2.5)
-    @this.licks.should == 19
-    @this.center.should == -2.5
-  end
   
   it "wraps objects" do
     nougat = Nougat.new
@@ -67,17 +66,43 @@ describe Candy::Piece do
   end
   
   it "unwraps objects" do
+    @this.blank = ""  # To force a save
     center = Nougat.new
     center.foo = :bar
-    @verifier.update({:_id => @this.id}, {:center => {"__object_" => {:class => Nougat.name, :ivars => {"@foo" => 'bar'}}}})
-    @this.center.should be_a(Nougat)
+    @verifier.update({'_id' => @this.id}, '$set' => {:center => {"__object_" => {:class => Nougat.name, :ivars => {"@foo" => 'bar'}}}})
+    @this.refresh.center.should be_a(Nougat)
     @this.center.instance_variable_get(:@foo).should == 'bar'
   end
   
+  it "wraps symbols" do
+    @this.crunch = :chomp
+    @verifier.find_one["crunch"].should == "__:chomp"
+  end
+
+  
   it "considers objects equal if they point to the same MongoDB ref" do
+    @this.blank = ""
     that = Zagnut(@this.id)
     that.should == @this
   end
+  
+  it "considers objects unequal if they don't have the same MongoDB ref" do
+    @this.calories = 5
+    that = Zagnut.new(calories: 5)
+    @this.should_not == that
+  end
+  
+  it "considers objects unequal if this one hasn't been saved yet" do
+    that = Zagnut.new
+    @this.should_not == that
+  end
+  
+  it "considers objects unequal if compared to something without an id" do
+    that = Object.new
+    @this.should_not == that
+  end
+  
+  
 
   describe "retrieval" do
     it "can find a record by its ID" do
@@ -85,13 +110,7 @@ describe Candy::Piece do
       that = Zagnut.first(@this.id)
       that.licks.should == 10
     end
-    
-    it "roundtrips across identical objects" do
-      that = Zagnut.first(@this.id)
-      @this.calories = 7500
-      that.calories.should == 7500
-    end
-    
+        
     it "returns nil on an object that can't be found" do
       id = Mongo::ObjectID.new
       Zagnut.find(id).should be_nil
@@ -170,12 +189,14 @@ describe Candy::Piece do
     it "will update a document if the key field's value is found" do
       Zagnut.update(:ounces, {ounces: 11, crunchy: :barely, salt: 0})
       @verifier.count.should == 2
+      @that.refresh
       @that.crunchy.should == :barely
     end
     
     it "can match on multiple keys" do
       Zagnut.update([:crunchy, :ounces], {ounces: 17, crunchy: :very, calories: 715})
       @verifier.count.should == 2
+      @this.refresh
       @this.calories.should == 715
     end
       
@@ -186,8 +207,16 @@ describe Candy::Piece do
     end
   end
   
+  describe "Embedding" do
+    @inner = KitKat.new
+    @inner.crunch = 'wafer'
+  end
+  
+  
+  
   
   after(:each) do
+    KitKat.collection.remove
     Zagnut.collection.remove
   end
   

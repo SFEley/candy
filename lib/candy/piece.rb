@@ -1,5 +1,4 @@
 require 'candy/factory'
-
 module Candy
   
   # Handles autopersistence and single-object retrieval for an arbitrary Ruby class.
@@ -12,8 +11,8 @@ module Candy
       # Retrieves a single object from Mongo by its search attributes, or nil if it can't be found.
       def first(conditions={})
         conditions = {'_id' => conditions} unless conditions.is_a?(Hash)
-        if record = collection.find_one(conditions, {:fields => ['_id']})
-          self.new(record['_id'])
+        if record = collection.find_one(conditions)
+          self.new(record)
         end
       end
       
@@ -52,88 +51,108 @@ module Candy
     
     
     
-    # We push ourselves into the DB before going on with our day.
+    # Our initializer checks the LAST argument passed to it, and pops it off the chain if it's a hash.
+    # If the hash contains an '_id' field we assume we're being constructed from a MongoDB document; 
+    # otherwise we assume we're a new document and insert ourselves into the database.
     def initialize(*args, &block)
-      candidate = args.pop  # Take our data off the top
-      @__candy = case candidate
-      when Mongo::ObjectID
-        candidate   # Ding!  An already-existing object.  Just remember it.
-      when Hash
-        self.class.collection.insert(Wrapper.wrap(candidate))  # Use this data to build a new record.
-      when nil
-        self.class.collection.insert({})  # No parameters passed; just insert a blank document so we have an ID.
-      else  
-        self.class.collection.insert({})
-        args.push candidate  # If it's some other parameter, best just put it back and pass it to 'super'.
+      if args[-1].is_a?(Hash)
+        data = args.pop
+        if @__candy_id = data.delete('_id')  # We're an existing document
+          @__candy = Wrapper.unwrap(data)
+        else
+          set data   # Insert the data we're given
+        end
       end
       super
     end
     
     # Shortcut to the document ID.
     def id
-      @__candy
+      @__candy_id
     end
     
     # Objects are equal if they point to the same MongoDB record (unless both have IDs of nil, in which case 
     # they're never equal.)
     def ==(subject)
-      self.id == subject.id
+      return false if id.nil?
+      return false unless subject.respond_to?(:id)
+      self.id == subject.id 
     end
     
     # Candy's magic ingredient. Assigning to any unknown attribute will push that value into the Mongo collection.
     # Retrieving any unknown attribute will return that value from this record in the Mongo collection.
     def method_missing(name, *args, &block)
       if name =~ /(.*)=$/  # We're assigning
-        set $1, Wrapper.wrap(args[0])
+        self[$1.to_sym] = args[0]
       elsif name =~ /(.*)\?$/  # We're asking
-        true if self.send($1)
+        (self[$1.to_sym] ? true : false)
       else
-        Wrapper.unwrap(self.class.collection.find_one(@__candy, :fields => [name.to_s])[name.to_s])
+        self[name]
       end
-    end
-
-    # Updates the Mongo document with the given element or elements.
-    def update(element)
-      self.class.collection.update({"_id" => @__candy}, element)
     end
     
-    # Given either a property/value pair or a hash (which can contain several property/value pairs), sets those
-    # values in Mongo using the atomic $set. The first form is functionally equivalent to simply using the
-    # magic assignment operator; i.e., `me.set(:foo, 'bar')` is the same as `me.foo = bar`.
-    def set(*args)
-      if args.length > 1  # This is the property/value form
-        hash = {args[0] => args[1]}
-      else
-        hash = args[0]
-      end
-      update '$set' => hash
-    end
-
     
     # Given a Candy integer property, increments it by the given value (which defaults to 1) using the atomic $inc.
     # (Note that we don't actually check the property to make sure it's an integer and $inc is valid. If it isn't, 
     # this operation will silently fail.)
     def inc(property, increment=1)
-      update '$inc' => {property => increment}
     end
 
     # Given a Candy array property, appends a value or values to the end of that array using the atomic $push.  
     # (Note that we don't actually check the property to make sure it's an array and $push is valid. If it isn't, 
     # this operation will silently fail.)
     def push(property, *values)
-      if values.count == 1
-        update '$push' => {property => Wrapper.wrap(values[0])}
-      else
-        update '$pushAll' => {property => Wrapper.wrap(values)}
-      end
     end
 
+    # Hash-like getter. If we don't have a value yet, we pull from the database looking for one.
+    # Fields pulled from the database are keyed as symbols in the hash.
+    def [](key)
+      (@__candy ||= retrieve_document || {})[key] 
+    end
+    
+    # Hash-like setter.  Updates the object's internal state, and writes to the database if the state
+    # has changed.  Keys should be passed in as symbols for best consistency with the database.
+    def []=(key, value)
+      unless (@__candy ||= {})[key] == value
+        @__candy[key] = value
+        set key => value
+      end
+    end
+    
+    # Clears memoized data so that the next read pulls from the database.
+    def refresh
+      @__candy = nil
+      self
+    end
+    
+    # Convenience method for debugging.
+    def to_s
+      "#{self.class.name} (#{id})#{@__candy}"
+    end
+    
+  protected
+    # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
+    # we have a document ID.  Otherwise inserts them and sets the object's ID. 
+    def set(fields)
+      if @__candy_id
+        mongo.update({'_id' => @__candy_id}, {'$set' => Wrapper.wrap(fields)})
+      else
+        @__candy_id = mongo.insert Wrapper.wrap(fields)
+      end
+    end
+    
+    # Pull our document from the database if we know our ID.
+    def retrieve_document
+      Wrapper.unwrap(mongo.find_one({'_id' => @__candy_id})) if @__candy_id
+    end
+  
   private
     
-    # Returns the secret decoder ring buried in the arguments to "new"
-    def check_for_candy(args)
-      args[-1].delete(:_candy) if args[-1].is_a?(Hash)
+    # Shortcut to our class's collection.
+    def mongo
+      self.class.collection
     end
+    
     
     def self.included(receiver)
       receiver.extend ClassMethods
