@@ -1,3 +1,4 @@
+require 'candy/qualified_const_get'
 module Candy
   
   # Utility methods that can generate new methods or classes for some of Candy's magic. 

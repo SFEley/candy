@@ -207,10 +207,108 @@ describe Candy::Piece do
     end
   end
   
-  describe "Embedding" do
-    @inner = KitKat.new
-    @inner.crunch = 'wafer'
+  describe "embedding" do
+    describe "Candy objects" do
+      before(:each) do
+        @inner = KitKat.new
+        @inner.crunch = 'wafer'   
+        @this.inner = @inner
+      end
+
+      it "writes the object" do
+        @verifier.find_one['inner']['crunch'].should == 'wafer'
+      end
+      
+      it "reads the object" do
+        that = Zagnut(@this.id)
+        that.inner.crunch.should == 'wafer'
+      end
+      
+      it "maintains the class" do
+        that = Zagnut(@this.id)
+        that.inner.should be_a(KitKat)
+      end
+      
+      it "cascades changes" do
+        @this.inner.coating = 'chocolate'
+        @verifier.find_one['inner']['coating'].should == 'chocolate'
+      end
+      
+      it "cascades deeply" do
+        @this.inner.inner = Zagnut.embed(beauty: 'recursive!')
+        that = Zagnut(@this.id)
+        that.inner.inner.beauty.should == 'recursive!'
+      end
+    end
+    
+    describe "regular hashes" do
+      before(:each) do
+        @this.filling = {taste: 'caramel', ounces: 0.75}
+      end
+      
+      it "writes the hash" do
+        @verifier.find_one['filling']['ounces'].should == 0.75
+      end
+      
+      it "reads the hash" do
+        that = Zagnut(@this.id)
+        that.filling.taste.should == 'caramel'
+        that.filling.should be_a(Hash)
+      end
+      
+      it "cascades changes" do
+        @this.filling[:calories] = 250
+        that = Zagnut(@this.id)
+        that.filling.calories.should == 250
+      end
+      
+      it "cascades deeply" do
+        @this.filling.subfilling = {texture: :gravel}
+        that = Zagnut(@this.id)
+        that.filling.subfilling.texture.should == :gravel
+      end
+    end
+    
+    describe "arrays" do
+      before(:each) do
+        @this.bits = ['peanut', 'almonds', 'titanium']
+      end
+      
+      it "writes the array" do
+        @verifier.find_one['bits'][1].should == 'almonds'
+      end
+      
+      it "reads the array" do
+        that = Zagnut(@this.id)
+        that.bits[2].should == 'titanium'
+      end
+      
+      it "cascades appends" do
+        @this.bits << 'kryptonite'
+        that = Zagnut(@this.id)
+        that.bits[-1].should == 'kryptonite'
+      end
+      
+      it "cascades substitutions" do
+        @this.bits[0] = 'raisins'
+        that = Zagnut(@this.id)
+        that.bits.should == ['raisins', 'almonds', 'titanium']
+      end
+      
+      it "cascades deletions" do
+        @this.bits.shift
+        that = Zagnut(@this.id)
+        that.should have(2).bits
+      end
+      
+      it "cascades deeply"
+      
+    end
+    
+    
   end
+  
+  
   
   
   
