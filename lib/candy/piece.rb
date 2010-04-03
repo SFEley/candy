@@ -1,5 +1,8 @@
+require 'candy/array'
+require 'candy/embeddable'
 require 'candy/factory'
 require 'candy/hash'
+
 module Candy
   
   # Handles autopersistence and single-object retrieval for an arbitrary Ruby class.
@@ -62,6 +65,10 @@ module Candy
         Factory.magic_method(receiver, 'first', 'conditions={}')
       end  
     end
+    
+    # HERE STARTETH THE MODULE PROPER.  (The above are the class methods.)
+    
+    include Embeddable
     
     
     # Our initializer checks the LAST argument passed to it, and pops it off the chain if it's a hash.
@@ -175,13 +182,6 @@ module Candy
       hash
     end
     
-    # Tells an embedded object whom it belongs to and what attribute it's associated with.  When
-    # its own state changes, it can use this information to update the parent.
-    def adopt(parent, attribute)
-      @__candy_parent = parent
-      @__candy_parent_key = attribute
-    end
-    
     
     # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
     # we have a document ID.  Otherwise inserts them and sets the object's ID. 
@@ -214,7 +214,8 @@ module Candy
       case value
       when CandyHash then value
       when Hash then CandyHash.embed(value)
-      when Array then value  # TODO
+      when CandyArray then value
+      when Array then CandyArray.embed(value)
       else
         value
       end

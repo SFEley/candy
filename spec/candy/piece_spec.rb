@@ -296,9 +296,9 @@ describe Candy::Piece do
       end
       
       it "cascades deletions" do
-        @this.bits.shift
+        @this.bits.shift.should == 'peanut'
         that = Zagnut(@this.id)
-        that.should have(2).bits
+        that.bits.size.should == 2
       end
       
       it "cascades deeply"

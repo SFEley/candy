@@ -1,4 +1,5 @@
 require 'candy/piece'
+
 module Candy
   
   # A subclass of Hash that behaves like a Candy::Piece.  This class has two major uses:
