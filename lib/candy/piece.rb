@@ -129,16 +129,7 @@ module Candy
     # Hash-like getter. If we don't have a value yet, we pull from the database looking for one.
     # Fields pulled from the database are keyed as symbols in the hash.
     def [](key)
-      value = candy[key] 
-      if value.is_a?(Hash)
-        if klass = value.delete(CLASS_KEY)
-          candy[key] = qualified_const_get(klass).new(value)
-        else
-          candy[key] = CandyHash.embed(value)
-        end
-      else
-        value
-      end
+      candy[key] 
     end
     
     # Hash-like setter.  Updates the object's internal state, and writes to the database if the state

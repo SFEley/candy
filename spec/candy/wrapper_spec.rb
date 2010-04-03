@@ -84,10 +84,6 @@ module Candy
         Wrapper.wrap(c).should == c
       end
   
-      it "can wrap a symbol in a way that preserves its symbolic nature" do
-        Wrapper.wrap(:oldglory).should == "__:oldglory"
-      end
-  
       it "wraps an array recursively" do
         a = [5, 'hi', [':symbol', 0], nil]
         Wrapper.wrap(a).should == a
@@ -100,7 +96,7 @@ module Candy
   
       it "wraps a hash's values" do
         h = {:foo => :bar, :yoo => [:yar, 5]}
-        Wrapper.wrap(h).values.should == ["__:bar", ["__:yar", 5]]
+        Wrapper.wrap(h).values.should == [:bar, [:yar, 5]]
       end
     
       it "rejects procs" do
@@ -161,9 +157,6 @@ module Candy
         Wrapper.unwrap(5).should == 5
       end
     
-      it "turns symbolized strings back into symbols" do
-        Wrapper.unwrap("__:blah").should == :blah
-      end
     
       it "turns hashed objects back into objects" do
         obj = Wrapper.unwrap(@wrapped)
@@ -174,14 +167,14 @@ module Candy
       end
       
       it "traverses a hash and unwraps whatever it needs to" do
-        hash = {"foo" => "__:bar", "'missile'" => @wrapped}
+        hash = {"foo" => :bar, "'missile'" => @wrapped}
         unwrapped = Wrapper.unwrap(hash)
         unwrapped[:foo].should == :bar
         unwrapped["missile"].should be_a(Missile)
       end
     
       it "traverses an array and unwraps whatever it needs to" do
-        array = ["__:foo", 5, @wrapped, nil, "hi"]
+        array = [:foo, 5, @wrapped, nil, "hi"]
         unwrapped = Wrapper.unwrap(array)
         unwrapped[0].should == :foo
         unwrapped[1].should == 5

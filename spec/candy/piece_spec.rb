@@ -76,7 +76,7 @@ describe Candy::Piece do
   
   it "wraps symbols" do
     @this.crunch = :chomp
-    @verifier.find_one["crunch"].should == "__:chomp"
+    @verifier.find_one["crunch"].should == :chomp
   end
 
   
@@ -241,69 +241,7 @@ describe Candy::Piece do
       end
     end
     
-    describe "regular hashes" do
-      before(:each) do
-        @this.filling = {taste: 'caramel', ounces: 0.75}
-      end
-      
-      it "writes the hash" do
-        @verifier.find_one['filling']['ounces'].should == 0.75
-      end
-      
-      it "reads the hash" do
-        that = Zagnut(@this.id)
-        that.filling.taste.should == 'caramel'
-        that.filling.should be_a(Hash)
-      end
-      
-      it "cascades changes" do
-        @this.filling[:calories] = 250
-        that = Zagnut(@this.id)
-        that.filling.calories.should == 250
-      end
-      
-      it "cascades deeply" do
-        @this.filling.subfilling = {texture: :gravel}
-        that = Zagnut(@this.id)
-        that.filling.subfilling.texture.should == :gravel
-      end
-    end
     
-    describe "arrays" do
-      before(:each) do
-        @this.bits = ['peanut', 'almonds', 'titanium']
-      end
-      
-      it "writes the array" do
-        @verifier.find_one['bits'][1].should == 'almonds'
-      end
-      
-      it "reads the array" do
-        that = Zagnut(@this.id)
-        that.bits[2].should == 'titanium'
-      end
-      
-      it "cascades appends" do
-        @this.bits << 'kryptonite'
-        that = Zagnut(@this.id)
-        that.bits[-1].should == 'kryptonite'
-      end
-      
-      it "cascades substitutions" do
-        @this.bits[0] = 'raisins'
-        that = Zagnut(@this.id)
-        that.bits.should == ['raisins', 'almonds', 'titanium']
-      end
-      
-      it "cascades deletions" do
-        @this.bits.shift.should == 'peanut'
-        that = Zagnut(@this.id)
-        that.bits.size.should == 2
-      end
-      
-      it "cascades deeply"
-      
-    end
     
     
   end

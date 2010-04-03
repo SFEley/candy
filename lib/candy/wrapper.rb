@@ -8,6 +8,7 @@ module Candy
   module Wrapper
     
     BSON_SAFE = [String, 
+                Symbol,
                 NilClass, 
                 TrueClass, 
                 FalseClass, 
@@ -27,8 +28,8 @@ module Candy
       # Pass the simple cases through
       return thing if BSON_SAFE.include?(thing.class)
       case thing
-      when Symbol
-        wrap_symbol(thing)
+      # when Symbol
+      #   wrap_symbol(thing)
       when Array
         wrap_array(thing)
       when Hash
@@ -100,16 +101,16 @@ module Candy
           unwrap_hash(thing)
         end
       when Array
-        thing.map {|element| unwrap(element)}
-      when /^__:(.+)/
-        $1.to_sym
+        CandyArray.embed(*thing.map {|element| unwrap(element)})
+      # when /^__:(.+)/
+      #   $1.to_sym
       else
         thing
       end
     end
     
     # Traverses the hash, unwrapping values and converting keys back to symbols.  Returns 
-    # the hash that results.
+    # the results as a CandyHash object.
     def self.unwrap_hash(hash)
       unwrapped = {}
       hash.each do |key, value|
@@ -122,7 +123,11 @@ module Candy
           unwrapped[unwrap(key)] = unwrap(value)
         end
       end
-      unwrapped
+      if klass = unwrapped.delete(CLASS_KEY)
+        qualified_const_get(klass).embed(unwrapped)
+      else
+        CandyHash.embed(unwrapped)
+      end
     end
     
     # Turns a hashed object back into an object of the stated class, setting any captured instance 

@@ -3,7 +3,7 @@ require 'candy/embeddable'
 
 module Candy
   
-  # A subclass of Array that saves itself to a parent Candy::Piece object.  MongoDB's atomic
+  # An array-like object that saves itself to a parent Candy::Piece object.  MongoDB's atomic
   # array operators are used extensively to perform concurrency-friendly updates of individual
   # array elements without rewriting the whole array.
   class CandyArray
@@ -31,12 +31,18 @@ module Candy
       self.candy[index] = property
     end
     
+    # Retrieves the value from our internal array.
+    def [](index)
+      candy[index]
+    end
+    
     # Appends a value to our array.  
     def <<(val)
       property = embeddify(val)
       @__candy_parent.operate :push, @__candy_parent_key => property
       self.candy << property
     end
+    alias_method :push, :<<
     
     # Pops the front off the MongoDB array and returns it, then resyncs the array.
     # (Thus supporting real-time concurrency for queue-like behavior.)
@@ -46,11 +52,23 @@ module Candy
       @__candy.shift
     end
     
-    # Returns the array (not hash!) of memoized values.
+    # Returns the array of memoized values.
     def candy
       @__candy ||= []
     end
     alias_method :to_mongo, :candy
+    alias_method :to_ary, :candy
+    
+    # Array equality.
+    def ==(val)
+      self.to_ary == val
+    end
+    
+    # Array length.
+    def length
+      self.to_ary.length
+    end
+    alias_method :size, :length
 
   end
 end
