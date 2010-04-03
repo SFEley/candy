@@ -144,6 +144,16 @@ module Candy
       end
     end
     
+    # We're implementing FindAndModify on Mongo 1.4 until the Ruby driver gets around to being updated...
+    def findAndModify(query, update, sort={})
+      command = OrderedHash[
+        findandmodify: self.collection.name,
+        query: query,
+        update: update,
+        sort: sort
+      ]
+      result = self.class.db.command(command)
+    end
     
     def self.included(receiver)
       receiver.extend         ClassMethods

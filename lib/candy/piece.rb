@@ -1,4 +1,5 @@
 require 'candy/array'
+require 'candy/crunch'
 require 'candy/embeddable'
 require 'candy/factory'
 require 'candy/hash'
@@ -9,9 +10,10 @@ module Candy
   # For retrieving many objects, include Candy::Collection somewhere else or use
   # the magic Candy() factory.
   module Piece
+    
     module ClassMethods
       include Crunch::ClassMethods
-
+      
       # Retrieves a single object from Mongo by its search attributes, or nil if it can't be found.
       def first(conditions={})
         conditions = {'_id' => conditions} unless conditions.is_a?(Hash)
@@ -67,7 +69,7 @@ module Candy
     end
     
     # HERE STARTETH THE MODULE PROPER.  (The above are the class methods.)
-    
+    include Crunch
     include Embeddable
     
     
@@ -93,6 +95,17 @@ module Candy
       @__candy_id
     end
     
+    # Pull our document from the database if we know our ID.
+    def retrieve_document
+      Wrapper.unwrap(collection.find_one({'_id' => id})) if id
+    end
+    
+    
+    # Returns the hash of memoized values.
+    def candy
+      @__candy ||= retrieve_document || {}
+    end
+    
     # Objects are equal if they point to the same MongoDB record (unless both have IDs of nil, in which case 
     # they're never equal.)
     def ==(subject)
@@ -116,12 +129,12 @@ module Candy
     # Hash-like getter. If we don't have a value yet, we pull from the database looking for one.
     # Fields pulled from the database are keyed as symbols in the hash.
     def [](key)
-      value = (@__candy ||= retrieve_document || {})[key] 
+      value = candy[key] 
       if value.is_a?(Hash)
         if klass = value.delete(CLASS_KEY)
-          @__candy[key] = qualified_const_get(klass).new(value)
+          candy[key] = qualified_const_get(klass).new(value)
         else
-          @__candy[key] = CandyHash.embed(value)
+          candy[key] = CandyHash.embed(value)
         end
       else
         value
@@ -132,7 +145,7 @@ module Candy
     # has changed.  Keys should be passed in as symbols for best consistency with the database.
     def []=(key, value)
       property = embeddify(value)
-      (@__candy ||= {})[key] = property
+      candy[key] = property
       if property.respond_to?(:to_mongo)
         property.adopt(self, key)
         set key => property.to_mongo
@@ -164,10 +177,6 @@ module Candy
       "#{self.class.name} (#{id})#{candy.inspect}"
     end
     
-    # Returns the hash of memoized values.
-    def candy
-      @__candy ||= {}
-    end
     
     # Converts the object into a hash for MongoDB storage.  Keep in mind that wrapping happens _after_
     # this stage, so it's best to use symbols for keys and leave internal arrays and hashes alone.
@@ -186,40 +195,22 @@ module Candy
     # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
     # we have a document ID.  Otherwise inserts them and sets the object's ID. 
     def set(fields)
-      if @__candy_parent
-        @__candy_parent.set embedded(fields)
-      elsif id
-        collection.update({'_id' => id}, {'$set' => Wrapper.wrap(fields)})
-      else
-        @__candy_id = collection.insert Wrapper.wrap(fields)
-      end
+      operate :set, fields
     end
     
-    # Pull our document from the database if we know our ID.
-    def retrieve_document
-      Wrapper.unwrap(collection.find_one({'_id' => id})) if id
+    # A generic updater that performs the atomic operation specified on a value nested arbitrarily deeply.
+    # 
+    def operate(operator, fields)
+      if @__candy_parent
+        @__candy_parent.operate operator, embedded(fields)
+      else
+        @__candy_id = collection.insert({}) unless id   # Ensure we have something to update
+        collection.update({'_id' => id}, {"$#{operator}" => Wrapper.wrap(fields)})
+      end
     end
   
   private
         
-    # If we're an attribute of another object, set our field names accordingly.
-    def embedded(fields)
-      new_fields = {}
-      fields.each{|k,v| new_fields["#{@__candy_parent_key}.#{k}".to_sym] = v}
-      new_fields
-    end
-    
-    # Convert hashes and arrays to CandyHashes and CandyArrays.
-    def embeddify(value)
-      case value
-      when CandyHash then value
-      when Hash then CandyHash.embed(value)
-      when CandyArray then value
-      when Array then CandyArray.embed(value)
-      else
-        value
-      end
-    end
     
     def self.included(receiver)
       receiver.extend ClassMethods

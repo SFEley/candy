@@ -14,7 +14,8 @@ module Candy
   # the 'candy' collection.  You can change that at any time by setting a different
   # collection at the class or object level.
   class CandyHash < Hash
-    include Candy::Piece
+    include Crunch
+    include Piece
     
     self.collection = 'candy'
     
