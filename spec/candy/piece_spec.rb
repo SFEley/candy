@@ -113,7 +113,7 @@ describe Candy::Piece do
         
     it "returns nil on an object that can't be found" do
       id = Mongo::ObjectID.new
-      Zagnut.find(id).should be_nil
+      Zagnut(id).should be_nil
     end
     
     it "can get a single object by attributes" do

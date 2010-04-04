@@ -1,11 +1,9 @@
 require 'candy/crunch'
+require 'candy/hash'
 
 module Candy
   
-  # Handles Mongo queries for a particular named collection.  You can include
-  # this in any class, but the class will start to act an awful lot like an
-  # Enumerator.  The 'collects' macro is required if you set this up manually
-  # instead of with the magic Candy() factory.
+  # Handles Mongo queries for cursors upon a particular Mongo collection.  
   module Collection
     FIND_OPTIONS = [:fields, :skip, :limit, :sort, :hint, :snapshot, :timeout]
     UP_SORTS = [Mongo::ASCENDING, 'ascending', 'asc', :ascending, :asc, 1, :up]
@@ -19,12 +17,17 @@ module Candy
       attr_reader :_candy_piece
       
       # Sets the collection that all queries run against, qualified by
-      # the namespace of the current class.  (This makes it easy to name
-      # sibling classes.)
-      def collects(something)
-        collectible = namespace + camelcase(something)
+      # the namespace of the current class.  (I.e., if this class is 
+      # BigModule::LittleModule::People, `collects :person` will look for
+      # a collection named "BigModule::LittleModule::Person".) You can also 
+      # specify a class that includes Candy::Piece that will be instantiated
+      # for all found records. Otherwise the collection name is used as a 
+      # default, and CandyHash is a fallback.
+      def collects(collection, piece = nil)
+        collectible = namespace + camelcase(collection)
+        piecemeal = (piece ? namespace + camelcase(piece) : collectible)
         self.collection = collectible
-        @_candy_piece = Kernel.qualified_const_get(collectible)
+        @_candy_piece = Kernel.qualified_const_get(piecemeal) || CandyHash
       end
       
       def all(options={})
