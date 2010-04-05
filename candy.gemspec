@@ -10,12 +10,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
   s.date = %q{2010-04-04}
-  s.description = %q{Candy is a lightweight ORM for the MongoDB database. If MongoMapper is Rails, Candy is Sinatra. 
-It provides a module you mix into any class, enabling the class to connect to Mongo on its own
-and push its objects into a collection. Candied objects act like OpenStructs, allowing attributes
-to be defined and updated in Mongo immediately without having to be declared in the class. 
-Mongo's atomic operators are used whenever possible, and a smart serializer (Candy::Wrapper) 
-converts almost any object for assignment to any attribute.
+  s.description = %q{Candy provides simple, transparent object persistence for the MongoDB database.  Classes that 
+include Candy modules save all properties to Mongo automatically, can be recursively embedded,
+and can retrieve records with chainable open-ended class methods, eliminating the need for 
+method calls like 'save' and 'find.'
 }
   s.email = %q{sfeley@gmail.com}
   s.extra_rdoc_files = [
@@ -58,7 +56,7 @@ converts almost any object for assignment to any attribute.
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}
-  s.summary = %q{The simplest MongoDB ORM}
+  s.summary = %q{Transparent persistence for MongoDB}
   s.test_files = [
     "spec/candy/array_spec.rb",
      "spec/candy/collection_spec.rb",
@@ -77,20 +75,17 @@ converts almost any object for assignment to any attribute.
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<mongo>, [">= 0.18"])
+      s.add_runtime_dependency(%q<mongo>, [">= 0.19.1"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_development_dependency(%q<yard>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
     else
-      s.add_dependency(%q<mongo>, [">= 0.18"])
+      s.add_dependency(%q<mongo>, [">= 0.19.1"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<yard>, [">= 0"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
     end
   else
-    s.add_dependency(%q<mongo>, [">= 0.18"])
+    s.add_dependency(%q<mongo>, [">= 0.19.1"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<yard>, [">= 0"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])
   end
 end
