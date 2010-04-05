@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{candy}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
-  s.date = %q{2010-02-16}
+  s.date = %q{2010-04-04}
   s.description = %q{Candy is a lightweight ORM for the MongoDB database. If MongoMapper is Rails, Candy is Sinatra. 
 It provides a module you mix into any class, enabling the class to connect to Mongo on its own
 and push its objects into a collection. Candied objects act like OpenStructs, allowing attributes
@@ -19,39 +19,57 @@ converts almost any object for assignment to any attribute.
 }
   s.email = %q{sfeley@gmail.com}
   s.extra_rdoc_files = [
-    "LICENSE",
+    "LICENSE.markdown",
      "README.markdown"
   ]
   s.files = [
     ".document",
      ".gitignore",
-     "LICENSE",
+     "LICENSE.markdown",
      "README.markdown",
      "Rakefile",
      "VERSION",
      "candy.gemspec",
      "lib/candy.rb",
+     "lib/candy/array.rb",
+     "lib/candy/collection.rb",
      "lib/candy/crunch.rb",
+     "lib/candy/embeddable.rb",
      "lib/candy/exceptions.rb",
+     "lib/candy/factory.rb",
+     "lib/candy/hash.rb",
+     "lib/candy/piece.rb",
      "lib/candy/qualified_const_get.rb",
      "lib/candy/wrapper.rb",
+     "spec/candy/array_spec.rb",
+     "spec/candy/collection_spec.rb",
      "spec/candy/crunch_spec.rb",
+     "spec/candy/hash_spec.rb",
+     "spec/candy/piece_spec.rb",
      "spec/candy/wrapper_spec.rb",
      "spec/candy_spec.rb",
      "spec/spec.opts",
      "spec/spec.watchr",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/support/kitkat_fixture.rb",
+     "spec/support/zagnuts_fixture.rb"
   ]
   s.homepage = %q{http://github.com/SFEley/candy}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{The simplest MongoDB ORM}
   s.test_files = [
-    "spec/candy/crunch_spec.rb",
+    "spec/candy/array_spec.rb",
+     "spec/candy/collection_spec.rb",
+     "spec/candy/crunch_spec.rb",
+     "spec/candy/hash_spec.rb",
+     "spec/candy/piece_spec.rb",
      "spec/candy/wrapper_spec.rb",
      "spec/candy_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/support/kitkat_fixture.rb",
+     "spec/support/zagnuts_fixture.rb"
   ]
 
   if s.respond_to? :specification_version then
