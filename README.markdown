@@ -304,21 +304,30 @@ This is very, very alpha software.  I'm using it in some non-trivial projects ri
 
 * There's no support yet for ActiveModel or similar validations, et cetera.  It's on my list to create an extension system, with Rails 3 and ActiveModel support being the first use case.  Right now this is more of a Sinatra sort of data thingy than a Rails data thingy.
 
+## Resources
 
-    
-== Contributing
+We have the usual array of stuff for your learning pleasure...
+
+* **Home page:** <http://github.com/SFEley/candy>
+* **Documentation:** <http://rdoc.info/projects/SFEley/candy>
+* **Report issues:** <http://github.com/SFEley/candy/issues>
+* **Discussion list:** <http://groups.google.com/groups/candy-users>
+
+## Contributing
  
-At this early stage, one of the best things you could do is just to tell me that you have an interest in using this thing. You can email me at sfeley@gmail.com -- if I get more than, say, three votes of interest, I'll throw a projects page on the wiki.
+At this early stage, one of the best things you could do is just to tell me that you have an interest in using this thing. Join the [discussion list][5] and let us know what you think. 
 
 Beyond that, report issues, please.  If you want to fork it and add features, fabulous.  Send me a pull request.
 
 Oh, and if you like science fiction stories, check out my podcast [Escape Pod](http://escapepod.org).  End of plug.
 
-== Copyright
+## License
 
-Copyright (c) 2010 Stephen Eley. See LICENSE for details.
+This project is licensed under the [Don't Be a Dick License][6], version 0.1, and is copyright 2010 by Stephen Eley. See the [LICENSE.markdown][6] file for elaboration on not being a dick.  (But you probably already know.)
 
 [1]: http://mongodb.org
 [2]: http://snippets.dzone.com/posts/show/7891
 [3]: http://www.mongodb.org/display/DOCS/findandmodify+Command
 [4]: http://rvm.beginrescueend.com/
+[5]: http://groups.google.com/groups/candy-users
+[6]: http://github.com/SFEley/candy/blob/master/LICENSE.markdown
