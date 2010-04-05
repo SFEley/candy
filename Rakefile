@@ -5,22 +5,20 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "candy"
-    gem.summary = %Q{The simplest MongoDB ORM}
+    gem.summary = %Q{Transparent persistence for MongoDB}
     gem.description = <<DESCRIPTION
-Candy is a lightweight ORM for the MongoDB database. If MongoMapper is Rails, Candy is Sinatra. 
-It provides a module you mix into any class, enabling the class to connect to Mongo on its own
-and push its objects into a collection. Candied objects act like OpenStructs, allowing attributes
-to be defined and updated in Mongo immediately without having to be declared in the class. 
-Mongo's atomic operators are used whenever possible, and a smart serializer (Candy::Wrapper) 
-converts almost any object for assignment to any attribute.
+Candy provides simple, transparent object persistence for the MongoDB database.  Classes that 
+include Candy modules save all properties to Mongo automatically, can be recursively embedded,
+and can retrieve records with chainable open-ended class methods, eliminating the need for 
+method calls like 'save' and 'find.'
 DESCRIPTION
 
     gem.email = "sfeley@gmail.com"
     gem.homepage = "http://github.com/SFEley/candy"
     gem.authors = ["Stephen Eley"]
-    gem.add_dependency "mongo", ">= 0.18"
+    gem.add_dependency "mongo", ">= 0.19.1"
     gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency "yard", ">= 0"
+    # gem.add_development_dependency "yard", ">= 0"
     gem.add_development_dependency "mocha", ">= 0.9.8"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
