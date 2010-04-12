@@ -2,6 +2,14 @@
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+## v0.2.2 - 2010-04-12 (the "I hate reporting bugs to the MongoDB team" release)
+
+The Mongo gem has broken the BSON functions out into a separate bson gem, so I had to fix things.  This means Candy is no longer compatible with the Mongo gem < 0.20.1.  Que sera.  (Also, the bson_ext gem **must** be installed due to a bug.  I'll remove the dependency when they fix it.)  Additional minor bonus: authentication.
+
+* New BSON::* classes correctly referenced in Candy::Wrapper
+* Candy.username and Candy.password properties to automatically authenticate at the global level
+* Class-specific .username and .password properties for class-specific databases
+
 ## v0.2.1 - 2010-04-04 (the "Oops" release)
 
 I screwed up in my use of Jeweler, and managed to get my versions out of sync between Github and Rubygems.org.  I tried to `gem yank` the one from Rubygems, but it won't let me push again with the same version number.  To justify bumping the patch number, I added this changelog.  Yeah, I know.  Pathetic.
