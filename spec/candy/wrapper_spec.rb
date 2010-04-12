@@ -50,7 +50,7 @@ module Candy
       end
   
       it "can wrap an ObjectID" do
-        i = Mongo::ObjectID.new
+        i = BSON::ObjectID.new
         Wrapper.wrap(i).should == i
       end
 
@@ -65,12 +65,12 @@ module Candy
       end
   
       it "can wrap a Mongo code object (if we ever need to)" do
-        c = Mongo::Code.new('5')
+        c = BSON::Code.new('5')
         Wrapper.wrap(c).should == c
       end
   
       it "can wrap a Mongo DBRef (if we ever need to)" do
-        d = Mongo::DBRef.new('foo', Mongo::ObjectID.new)
+        d = BSON::DBRef.new('foo', BSON::ObjectID.new)
         Wrapper.wrap(d).should == d
       end
   

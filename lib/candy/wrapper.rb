@@ -1,4 +1,4 @@
-require 'mongo'
+require 'bson'
 require 'date'  # Only so we know what one is. Argh.
 require 'candy/qualified_const_get'
 
@@ -16,10 +16,10 @@ module Candy
                 Float, 
                 Time,
                 Regexp,
-                ByteBuffer, 
-                Mongo::ObjectID, 
-                Mongo::Code,
-                Mongo::DBRef]
+                BSON::ByteBuffer, 
+                BSON::ObjectID, 
+                BSON::Code,
+                BSON::DBRef]
     
     # Makes an object safe for the sharp pointy edges of MongoDB. Types properly serialized
     # by the BSON.serialize call get passed through unmolested; others are unpacked and their
@@ -28,8 +28,6 @@ module Candy
       # Pass the simple cases through
       return thing if BSON_SAFE.include?(thing.class)
       case thing
-      # when Symbol
-      #   wrap_symbol(thing)
       when Array
         wrap_array(thing)
       when Hash
@@ -69,11 +67,6 @@ module Candy
         end
       end
       wrapped
-    end
-    
-    # Returns a string that's distinctive enough for us to unwrap later and produce the same symbol.
-    def self.wrap_symbol(symbol)
-      "__:" + symbol.to_s
     end
     
     # Returns a nested hash containing the class and instance variables of the object.  It's not the

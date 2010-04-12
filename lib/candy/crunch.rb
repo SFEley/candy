@@ -140,7 +140,7 @@ module Candy
         else
           raise TypeError, "Index direction should be :asc or :desc"
         end
-        collection.create_index(property => mongo_direction)
+        collection.create_index([[property, mongo_direction]])
       end
     end
     

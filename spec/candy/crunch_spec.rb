@@ -128,12 +128,12 @@ describe Candy::Crunch do
   describe "index" do
     it "can be created with just a property name" do
       PeanutBrittle.index(:blah)
-      PeanutBrittle.collection.index_information.values[1].should == [["blah", Mongo::ASCENDING]]
+      PeanutBrittle.collection.index_information.values[1]['key'].should == {"blah" => Mongo::ASCENDING}
     end
     
     it "can be created with a direction" do
       PeanutBrittle.index(:fwah, :desc)
-      PeanutBrittle.collection.index_information.values[1].should == [["fwah", Mongo::DESCENDING]]
+      PeanutBrittle.collection.index_information.values[1]['key'].should == {"fwah" => Mongo::DESCENDING}
     end
     
     it "throws an exception if you give it a type other than :asc or :desc" do
