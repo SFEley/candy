@@ -47,6 +47,8 @@ describe Candy::Crunch do
       PeanutBrittle.connection = nil
       PeanutBrittle.instance_variable_get(:@db).should be_nil
     end
+    
+      
 
     after(:each) do
       Candy.host = nil
@@ -96,6 +98,39 @@ describe Candy::Crunch do
       PeanutBrittle.collection.name.should == PeanutBrittle.name
       PeanutBrittle.db = nil
       PeanutBrittle.instance_variable_get(:@collection).should be_nil
+    end
+    
+    it "takes a username and password if you provide them globally" do
+      Mongo::DB.any_instance.expects(:authenticate).with('johnny5','is_alive').returns(true)
+      Candy.username = 'johnny5'
+      Candy.password = 'is_alive'
+      PeanutBrittle.db.collection_names.should_not be_nil
+    end
+
+    it "takes a username and password if you provide them at the class level" do
+      Mongo::DB.any_instance.expects(:authenticate).with('johnny5','is_alive').returns(true)
+      PeanutBrittle.username = 'johnny5'
+      PeanutBrittle.password = 'is_alive'
+      PeanutBrittle.db = 'candy_test'
+      PeanutBrittle.db.collection_names.should_not be_nil
+    end
+
+    it "does not authenticate if only a username is given" do
+      Mongo::DB.any_instance.expects(:authenticate).never
+      Candy.username = 'johnny5'
+      PeanutBrittle.db.collection_names.should_not be_nil
+    end
+      
+    
+    it "does not authenticate if only a password is given" do
+      Mongo::DB.any_instance.expects(:authenticate).never
+      Candy.password = 'is_alive'
+      PeanutBrittle.db.collection_names.should_not be_nil
+    end
+
+    after(:each) do
+      Candy.username = nil
+      Candy.password = nil
     end
     
     after(:all) do

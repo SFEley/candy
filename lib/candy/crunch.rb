@@ -58,7 +58,7 @@ module Candy
     when Mongo::DB
       @db = val
     when String
-      @db = Mongo::DB.new(val, connection)
+      @db = maybe_authenticate(Mongo::DB.new(val, connection))
     when nil
       @db = nil
     else 
@@ -69,7 +69,29 @@ module Candy
   # Returns the database you gave, or creates a default database named for your username (or 'candy' if it
   # can't find a username).
   def self.db
-    @db ||= Mongo::DB.new(Etc.getlogin || 'candy', connection, :strict => false)
+    @db ||= maybe_authenticate(Mongo::DB.new(Etc.getlogin || 'candy', connection, :strict => false))
+  end
+  
+  # Sets the user for Mongo authentication. Both username AND password must be set or nothing will happen.
+  # Also ignored if you supply your own Mongo::DB object instead of a string.
+  def self.username=(val)
+    @username = val
+  end
+  
+  # The user for Mongo authentication. 
+  def self.username
+    @username
+  end
+  
+  # Sets the password for Mongo authentication. Both username AND password must be set or nothing will happen.
+  # Also ignored if you supply your own Mongo::DB object instead of a string.
+  def self.password=(val)
+    @password = val
+  end
+  
+  # The password for Mongo authentication
+  def self.password
+    @password
   end
   
   # All of the hard crunchy bits that connect us to a collection within a Mongo database.
@@ -97,7 +119,7 @@ module Candy
         when Mongo::DB
           @db = val
         when String
-          @db = Mongo::DB.new(val, connection)
+          @db = maybe_authenticate(Mongo::DB.new(val, connection))
         when nil
           @db = nil
         else 
@@ -108,6 +130,30 @@ module Candy
       # Returns the database you gave, or uses the application-level Candy database.
       def db
         @db ||= Candy.db
+      end
+      
+      # Sets the user for Mongo authentication. Defaults to the global Candy.username. 
+      # Both username AND password must be set or nothing will happen.
+      # Also ignored if you supply your own Mongo::DB object instead of a string.
+      def username=(val)
+        @username = val
+      end
+
+      # The user for Mongo authentication. 
+      def username
+        @username ||= Candy.username
+      end
+
+      # Sets the password for Mongo authentication. Defaults to the global Candy.password.
+      # Both username AND password must be set or nothing will happen.
+      # Also ignored if you supply your own Mongo::DB object instead of a string.
+      def password=(val)
+        @password = val
+      end
+
+      # The password for Mongo authentication
+      def password
+        @password ||= Candy.password
       end
       
       # Accepts either a Mongo::Collection object or a string with the collection name.  If you provide a 
@@ -142,7 +188,20 @@ module Candy
         end
         collection.create_index([[property, mongo_direction]])
       end
+      
+    private
+      # If we don't have a username AND password, returns the DB given.  If we do, returns the DB if-and-only-if
+      # we can authenticate on that DB.
+      def maybe_authenticate(db)
+        if @username && @password
+          db if db.authenticate(@username, @password)
+        else
+          db
+        end
+      end
+
     end
+    
     
     # We're implementing FindAndModify on Mongo 1.4 until the Ruby driver gets around to being updated...
     def findAndModify(query, update, sort={})
@@ -154,9 +213,23 @@ module Candy
       ]
       result = self.class.db.command(command)
     end
+
     
     def self.included(receiver)
       receiver.extend         ClassMethods
     end
+    
   end
+  
+private 
+  # If we don't have a username AND password, returns the DB given.  If we do, returns the DB if-and-only-if
+  # we can authenticate on that DB.
+  def self.maybe_authenticate(db)
+    if @username && @password
+      db if db.authenticate(@username, @password)
+    else
+      db
+    end
+  end
+  
 end
