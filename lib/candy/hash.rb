@@ -1,6 +1,9 @@
 require 'candy/piece'
 
 module Candy
+  # Stubbing to avoid circular dependency problems
+  module Piece
+  end
   
   # A subclass of Hash that behaves like a Candy::Piece.  This class has two major uses:
   #
