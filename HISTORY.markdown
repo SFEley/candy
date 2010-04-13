@@ -2,6 +2,15 @@
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+## v0.2.3 - 2010-04-13 (the "around and around we go") release
+
+Turns out some Rails environments get really ornery if you introduce circular dependencies into your code.  Like, say, requiring 'candy/hash' inside 'candy/piece' and 'candy/piece' inside 'candy/hash'.  Who knew?
+
+(Rhetorical question.  _I_ should have known.  I'll restructure later to remove the breakage.)
+
+* Stubbed out Candy::Piece to resolve circular dependency issue
+
+
 ## v0.2.2 - 2010-04-12 (the "I hate reporting bugs to the MongoDB team" release)
 
 The Mongo gem has broken the BSON functions out into a separate bson gem, so I had to fix things.  This means Candy is no longer compatible with the Mongo gem < 0.20.1.  Que sera.  (Also, the bson_ext gem **must** be installed due to a bug.  I'll remove the dependency when they fix it.)  Additional minor bonus: authentication.
