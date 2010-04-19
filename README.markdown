@@ -311,7 +311,7 @@ We have the usual array of stuff for your learning pleasure...
 * **Home page:** <http://github.com/SFEley/candy>
 * **Documentation:** <http://rdoc.info/projects/SFEley/candy>
 * **Report issues:** <http://github.com/SFEley/candy/issues>
-* **Discussion list:** <http://groups.google.com/groups/candy-users>
+* **Discussion list:** <http://groups.google.com/group/candy-users>
 
 ## Contributing
  
@@ -329,5 +329,5 @@ This project is licensed under the [Don't Be a Dick License][6], version 0.1, an
 [2]: http://snippets.dzone.com/posts/show/7891
 [3]: http://www.mongodb.org/display/DOCS/findandmodify+Command
 [4]: http://rvm.beginrescueend.com/
-[5]: http://groups.google.com/groups/candy-users
+[5]: http://groups.google.com/group/candy-users
 [6]: http://github.com/SFEley/candy/blob/master/LICENSE.markdown
