@@ -1,9 +1,10 @@
-# Candy History
+Candy History
+=============
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
-## v0.2.4 - 2010-04-21 (the "No shortcuts!" release)
-
+v0.2.4 - 2010-04-21 (the "No shortcuts!" release)
+-------------------------------------------------
 While building validations and custom behavior on a new app, I realized that any method overrides in my classes
 were being bypassed if I passed the values in a hash to .new() -- it was just setting everything straight in Mongo.
 Inconsistent behavior is uncool.  So now every hash key calls the relevant assignment method in the class.
@@ -11,8 +12,9 @@ Inconsistent behavior is uncool.  So now every hash key calls the relevant assig
 * Values passed in hash to new objects call the relevant assignment methods
 * Fixed typo in README (thanks, kfl62)
 
-## v0.2.3 - 2010-04-13 (the "around and around we go") release
 
+v0.2.3 - 2010-04-13 (the "around and around we go") release
+-----------------------------------------------------------
 Turns out some Rails environments get really ornery if you introduce circular dependencies into your code.  Like, say, requiring 'candy/hash' inside 'candy/piece' and 'candy/piece' inside 'candy/hash'.  Who knew?
 
 (Rhetorical question.  _I_ should have known.  I'll restructure later to remove the breakage.)
@@ -20,22 +22,24 @@ Turns out some Rails environments get really ornery if you introduce circular de
 * Stubbed out Candy::Piece to resolve circular dependency issue
 
 
-## v0.2.2 - 2010-04-12 (the "I hate reporting bugs to the MongoDB team" release)
-
+v0.2.2 - 2010-04-12 (the "I hate reporting bugs to the MongoDB team" release)
+-----------------------------------------------------------------------------
 The Mongo gem has broken the BSON functions out into a separate bson gem, so I had to fix things.  This means Candy is no longer compatible with the Mongo gem < 0.20.1.  Que sera.  (Also, the bson_ext gem **must** be installed due to a bug.  I'll remove the dependency when they fix it.)  Additional minor bonus: authentication.
 
 * New BSON::* classes correctly referenced in Candy::Wrapper
 * Candy.username and Candy.password properties to automatically authenticate at the global level
 * Class-specific .username and .password properties for class-specific databases
 
-## v0.2.1 - 2010-04-04 (the "Oops" release)
 
+v0.2.1 - 2010-04-04 (the "Oops" release)
+----------------------------------------
 I screwed up in my use of Jeweler, and managed to get my versions out of sync between Github and Rubygems.org.  I tried to `gem yank` the one from Rubygems, but it won't let me push again with the same version number.  To justify bumping the patch number, I added this changelog.  Yeah, I know.  Pathetic.
 
 * The HISTORY file you're reading
 
-## v0.2.0 - 2010-04-04 (the "Candy for Easter" release)
 
+v0.2.0 - 2010-04-04 (the "Candy for Easter" release)
+----------------------------------------------------
 A nearly total rewrite.  Some specs still remain from v0.1, but very little actual code.  Added in this release were:
 
 * Candy::Collection
@@ -48,6 +52,7 @@ A nearly total rewrite.  Some specs still remain from v0.1, but very little actu
 * The Don't Be a Dick License
 * Other stuff I've surely forgotten about
 
-## v0.1 - 2010-02-16
 
+v0.1 - 2010-02-16
+-----------------
 Let's just call this one a "proof of concept" release.  It worked, but clumsily.  Only Candy::Piece was really implemented, with no embedding, and the bulk of the code was directly in `method_missing`.  Global variables like **$MONGO_HOST** were used instead of module properties, and the separation of driver and framework concerns was nonexistent.  Please don't look at it.  You'll make me blush.
