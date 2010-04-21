@@ -84,7 +84,7 @@ module Candy
         elsif data.delete(EMBED_KEY)  # We're being embedded: take any data, but don't save to Mongo
           @__candy = data
         else
-          set data   # Insert the data we're given
+          data.each {|key, value| send("#{key}=", value)}  # Assign all the data we're given
         end
       end
       super

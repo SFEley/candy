@@ -2,6 +2,14 @@
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+## v0.2.4 - 2010-04-21 (the "No shortcuts!" release)
+
+While building validations and custom behavior on a new app, I realized that any method overrides in my classes
+were being bypassed if I passed the values in a hash to .new() -- it was just setting everything straight in Mongo.
+Inconsistent behavior is uncool.  So now every hash key calls the relevant assignment method in the class.
+
+* 
+
 ## v0.2.3 - 2010-04-13 (the "around and around we go") release
 
 Turns out some Rails environments get really ornery if you introduce circular dependencies into your code.  Like, say, requiring 'candy/hash' inside 'candy/piece' and 'candy/piece' inside 'candy/hash'.  Who knew?
