@@ -8,7 +8,8 @@ While building validations and custom behavior on a new app, I realized that any
 were being bypassed if I passed the values in a hash to .new() -- it was just setting everything straight in Mongo.
 Inconsistent behavior is uncool.  So now every hash key calls the relevant assignment method in the class.
 
-* 
+* Values passed in hash to new objects call the relevant assignment methods
+* Fixed typo in README (thanks, kfl62)
 
 ## v0.2.3 - 2010-04-13 (the "around and around we go") release
 
