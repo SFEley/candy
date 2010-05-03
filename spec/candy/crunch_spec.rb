@@ -95,7 +95,7 @@ describe Candy::Crunch do
     
     it "clears the collection when you set it" do
       PeanutBrittle.db = 'candy_test'
-      PeanutBrittle.collection.name.should == PeanutBrittle.name
+      PeanutBrittle.collection.name.should == 'PeanutBrittle'
       PeanutBrittle.db = nil
       PeanutBrittle.instance_variable_get(:@collection).should be_nil
     end
@@ -151,7 +151,7 @@ describe Candy::Crunch do
     end
   
     it "defaults to the class name" do
-      PeanutBrittle.collection.name.should == PeanutBrittle.name
+      PeanutBrittle.collection.name.should == 'PeanutBrittle'
     end
   
     it "throws an exception if you give it a type it can't recognize" do

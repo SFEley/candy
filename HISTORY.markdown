@@ -3,11 +3,20 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.5 - 2010-05-02 (the "John::Jacob::Jingleheimer::Schmidt" release)
+----------------------------------------------------------------------
+As I was building an app based on several Sinatra building blocks, I realized that Candy was creating collection names like **Login::Person** and **Profile::Person** with complete module namespaces.  I wanted both of those **Person** classes to be different views on the same data, and having to override the collection name each time was becoming a pain.  I'm not sure that fully namespacing the collection names inside Mongo has much value, and we weren't really documenting that it was happening, so I've simplified things.
+
+* Default collection names no longer include module namespace paths
+
+
 v0.2.4 - 2010-04-21 (the "No shortcuts!" release)
--------------------------------------------------
-While building validations and custom behavior on a new app, I realized that any method overrides in my classes
-were being bypassed if I passed the values in a hash to .new() -- it was just setting everything straight in Mongo.
-Inconsistent behavior is uncool.  So now every hash key calls the relevant assignment method in the class.
+------------------------------------------------- 
+While building validations and custom behavior on a new app, I realized that
+any method overrides in my classes were being bypassed if I passed the values
+in a hash to .new() -- it was just setting everything straight in Mongo.
+Inconsistent behavior is uncool. So now every hash key calls the relevant
+assignment method in the class.
 
 * Values passed in hash to new objects call the relevant assignment methods
 * Fixed typo in README (thanks, kfl62)

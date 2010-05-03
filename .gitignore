@@ -5,6 +5,9 @@
 *.tmproj
 tmtags
 
+## RVM
+.rvmrc
+
 ## EMACS
 *~
 \#*

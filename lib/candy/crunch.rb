@@ -172,8 +172,9 @@ module Candy
       end
       
       # Returns the collection you gave, or creates a default collection named for the current class.
+      # (By which we mean _just_ the class name, not the full module namespace.)
       def collection
-        @collection ||= db.collection(name)
+        @collection ||= db.collection(name.sub(/^.*::/,''))
       end
       
       # Creates an index on the specified property, with an optional direction specified as either :asc or :desc.

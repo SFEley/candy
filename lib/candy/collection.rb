@@ -16,16 +16,13 @@ module Candy
       
       attr_reader :_candy_piece
       
-      # Sets the collection that all queries run against, qualified by
-      # the namespace of the current class.  (I.e., if this class is 
-      # BigModule::LittleModule::People, `collects :person` will look for
-      # a collection named "BigModule::LittleModule::Person".) You can also 
+      # Sets the collection that all queries run against.  You can also 
       # specify a class that includes Candy::Piece that will be instantiated
       # for all found records. Otherwise the collection name is used as a 
       # default, and CandyHash is a fallback.
       def collects(collection, piece = nil)
-        collectible = namespace + camelcase(collection)
-        piecemeal = (piece ? namespace + camelcase(piece) : collectible)
+        collectible = camelcase(collection)
+        piecemeal = namespace + (piece ? camelcase(piece) : collectible)
         self.collection = collectible
         @_candy_piece = Kernel.qualified_const_get(piecemeal) || CandyHash
       end
