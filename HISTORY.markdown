@@ -3,6 +3,15 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.6 - 2010-05-03 (the "Spanish Fly" release)
+-----------------------------------------------
+Thanks to [xpaulbettsx](http://github.com/xpaulbettsx) for pointing out in issue \#4 that Candy was attempting to connect to localhost prematurely.  
+A stray setting of the collection name in CandyHash was the culprit, causing a cascade of lookups.  Refactored to maintain lazy evaluation of the whole MongoDB object chain, and while I was at it, moved most of the interesting objects into `autoload` conditions in the main Candy file instead of `require`.
+
+* Reorganized for autoloading
+* Fixed issue #4 - tries to connect to host immediately on require
+
+
 v0.2.5 - 2010-05-02 (the "John::Jacob::Jingleheimer::Schmidt" release)
 ----------------------------------------------------------------------
 As I was building an app based on several Sinatra building blocks, I realized that Candy was creating collection names like **Login::Person** and **Profile::Person** with complete module namespaces.  I wanted both of those **Person** classes to be different views on the same data, and having to override the collection name each time was becoming a pain.  I'm not sure that fully namespacing the collection names inside Mongo has much value, and we weren't really documenting that it was happening, so I've simplified things.
