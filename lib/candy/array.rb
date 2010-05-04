@@ -10,7 +10,7 @@ module Candy
     include Crunch
     include Embeddable
     
-    # Included for purposes of 'embeddable' compatbility, but does nothing except pass its 
+    # Included for purposes of 'embeddable' compatibility, but does nothing except pass its 
     # parameters to the new object.  Since you can't save an array on its own anyway, there's
     # no need to flag it as "don't save."
     def self.embed(*args, &block)

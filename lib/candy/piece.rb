@@ -2,7 +2,6 @@ require 'candy/array'
 require 'candy/crunch'
 require 'candy/embeddable'
 require 'candy/factory'
-require 'candy/hash'
 
 module Candy
   

@@ -163,7 +163,7 @@ module Candy
         when Mongo::Collection
           @collection = val
         when String
-          @collection = db.collection(val)
+          @collection_name = val  # Don't collapse the probability wave until called upon
         when nil
           @collection = nil
         else
@@ -174,7 +174,7 @@ module Candy
       # Returns the collection you gave, or creates a default collection named for the current class.
       # (By which we mean _just_ the class name, not the full module namespace.)
       def collection
-        @collection ||= db.collection(name.sub(/^.*::/,''))
+        @collection ||= db.collection(collection_name)
       end
       
       # Creates an index on the specified property, with an optional direction specified as either :asc or :desc.
@@ -191,6 +191,15 @@ module Candy
       end
       
     private
+      # If we were passed a string on #collection= then we want to pass it to the DB when the collection is referenced,
+      # not right away.  So store it and pass it back on the initial call to #collection.  If nothing, pass the 
+      # class name instead.
+      def collection_name
+        collection_name = @collection_name || name.sub(/^.*::/,'')
+        @collection_name = nil  # Forget this name to avoid confusion on subsequent calls
+        collection_name
+      end
+      
       # If we don't have a username AND password, returns the DB given.  If we do, returns the DB if-and-only-if
       # we can authenticate on that DB.
       def maybe_authenticate(db)
