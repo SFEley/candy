@@ -79,7 +79,7 @@ module Candy
       if args[-1].is_a?(Hash)
         data = args.pop
         if @__candy_id = data.delete('_id')  # We're an existing document
-          @__candy = self.from_mongo(Wrapper.unwrap(data))
+          @__candy = self.from_candy(Wrapper.unwrap(data))
         elsif data.delete(EMBED_KEY)  # We're being embedded: take any data, but don't save to Mongo
           @__candy = data
         else
@@ -134,14 +134,9 @@ module Candy
     # Hash-like setter.  Updates the object's internal state, and writes to the database if the state
     # has changed.  Keys should be passed in as symbols for best consistency with the database.
     def []=(key, value)
-      property = embeddify(value)
+      property = candy_coat(key, value) # Transform hashes and arrays, and communicate embedding
       candy[key] = property
-      if property.respond_to?(:to_mongo)
-        property.adopt(self, key)
-        set key => property.to_mongo
-      else
-        set key => property
-      end
+      set key => property
     end
     
     # Clears memoized data so that the next read pulls from the database.
@@ -170,14 +165,14 @@ module Candy
     
     # Converts the object into a hash for MongoDB storage.  Keep in mind that wrapping happens _after_
     # this stage, so it's best to use symbols for keys and leave internal arrays and hashes alone.
-    def to_mongo
+    def to_candy
       candy.merge(CLASS_KEY => self.class.name)
     end
     
     # A hoook for specific object classes to set their internal state using the hash passed in by
     # MongoDB.  If you override this method, delete any hash keys you need for your own purposes
     # and then call 'super' on the remainder.
-    def from_mongo(hash) 
+    def from_candy(hash) 
       hash
     end
     

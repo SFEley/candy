@@ -26,7 +26,7 @@ module Candy
     # array in Mongo still matches our current state.  If concurrent updates have happened, you might end up
     # overwriting something other than what you thought.
     def []=(index, val)
-      property = embeddify(val)
+      property = candy_coat(@__candy_parent_key, val)
       @__candy_parent.set embedded(index => property)
       self.candy[index] = property
     end
@@ -38,7 +38,7 @@ module Candy
     
     # Appends a value to our array.  
     def <<(val)
-      property = embeddify(val)
+      property = candy_coat(@__candy_parent_key, val)
       @__candy_parent.operate :push, @__candy_parent_key => property
       self.candy << property
     end
@@ -56,7 +56,7 @@ module Candy
     def candy
       @__candy ||= []
     end
-    alias_method :to_mongo, :candy
+    alias_method :to_candy, :candy
     alias_method :to_ary, :candy
     
     # Array equality.

@@ -27,6 +27,7 @@ module Candy
     def self.wrap(thing)
       # Pass the simple cases through
       return thing if BSON_SAFE.include?(thing.class)
+      thing = thing.to_candy if thing.respond_to?(:to_candy)  # Make it sweeter if it can be sweetened
       case thing
       when Array
         wrap_array(thing)

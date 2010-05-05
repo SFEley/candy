@@ -22,7 +22,7 @@ module Candy
   
     # Overrides the default behavior in Candy::Piece so that we DO NOT add our
     # class name to the saved values.
-    def to_mongo
+    def to_candy
       candy
     end
           
