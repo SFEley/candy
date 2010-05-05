@@ -3,6 +3,14 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.7 - 2010-05-05 (the "yes, you MAY put your peanut butter in my chocolate" release)
+--------------------------------------------------------------------------------------
+Found and fixed a convoluted bug that was preventing embedded Candy objects from being saved properly. (It was treating them as _non_-Candy objects, which makes the world a gray and boring place.) While I was at it, refactored some methods and chipped away at some complexity.
+
+**MODERATELY BREAKING CHANGE ALERT:** I've renamed the `to_mongo` and `from_mongo` methods to `to_candy` and `from_candy`.  The initial reason for the _mongo_ names was for some vague semblance of compatibility with [MongoMapper](http://github.com/jnunemaker/mongomapper), but that doesn't make sense since we're treating serialized Candy objects completely differently and expecting them to unpack themselves. I seriously doubt anyone was using these methods yet, but just in case, now you know.
+
+* Fixed embedding bug on Candy objects
+
 v0.2.6 - 2010-05-03 (the "Spanish Fly" release)
 -----------------------------------------------
 Thanks to [xpaulbettsx](http://github.com/xpaulbettsx) for pointing out in issue \#4 that Candy was attempting to connect to localhost prematurely.  
