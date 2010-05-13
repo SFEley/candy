@@ -205,6 +205,22 @@ describe Candy::Piece do
       @verifier.count.should == 3
       Zagnut.crunchy(:not_quite).color.should == 'brown'
     end
+    
+    it "can increment a value simply" do
+      @this.inc(:ounces).should == 18
+      @verifier.find_one(ounces: 18)["crunchy"].should == :very
+    end
+    
+    it "can increment a value by a specified positive amount" do
+      @this.inc(:ounces, 5).should == 22
+      @verifier.find_one(ounces: 22)["crunchy"].should == :very
+    end
+    
+    it "can increment a value by a specified negative amount" do
+      @this.inc(:ounces, -5).should == 12
+      @verifier.find_one(ounces: 12)["crunchy"].should == :very
+    end
+    
   end
   
   describe "embedding" do

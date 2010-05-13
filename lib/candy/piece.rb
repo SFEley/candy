@@ -195,6 +195,13 @@ module Candy
       operate :set, fields
     end
     
+    # Increments the specified field by the (optional) specified amount and returns the new value.
+    def inc(field, value=1)
+      result = collection.find_and_modify query: {"_id" => id}, update: {'$inc' => {Wrapper.wrap_key(field) => value}}, new: true
+      @__candy = from_candy(result)
+      candy[field]
+    end
+    
     # A generic updater that performs the atomic operation specified on a value nested arbitrarily deeply.
     # 
     def operate(operator, fields)

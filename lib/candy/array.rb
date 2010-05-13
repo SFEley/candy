@@ -48,7 +48,7 @@ module Candy
     # (Thus supporting real-time concurrency for queue-like behavior.)
     def shift(n=1)
       doc = @__candy_parent.collection.find_and_modify query: {"_id" => @__candy_parent.id}, update: {'$pop' => {@__candy_parent_key => -1}}, new: false
-      @__candy = doc[@__candy_parent_key.to_s]
+      @__candy = from_candy(doc[@__candy_parent_key.to_s])
       @__candy.shift
     end
     

@@ -29,7 +29,7 @@ We got 'em.  Candy pieces can contain each other recursively, to any arbitrary d
                      seafood: 'Maryland blue crabs',
                      scotch: ['Glenmorangie Port Wood Finish',
                               'Balvenie Single Barrel']}
-    me.spouse = Person.embed(first_name: 'Anna', eyes: :blue)
+    me.spouse = Person.piece(first_name: 'Anna', eyes: :blue)
     me.spouse.eyes            # => :blue
     me.favorites.scotch[1]    # => 'Balvenie Single Barrel'
                               
