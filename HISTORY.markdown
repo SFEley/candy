@@ -3,6 +3,14 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.8 - 2010-05-13 (the "Holy crap, that was ten pomodoros" release)
+---------------------------------------------------------------------
+Major refactoring to fix a major bug: embedded documents weren't being loaded properly on document retrieval.  This resulted in a lot of code being moved around, and some regrettable circular connascence between Piece and Wrapper that I hope to address later.  Overall, though, it's simpler now.
+
+**API CHANGE:** The `.embed` class method has two new required parameters and is now used _only_ when you know the parent you want to embed something in.  To make a Candy piece that you don't want to be saved right away, use `.piece` instead.
+
+* Fixed Github issue #11
+
 v0.2.7 - 2010-05-05 (the "yes, you MAY put your peanut butter in my chocolate" release)
 --------------------------------------------------------------------------------------
 Found and fixed a convoluted bug that was preventing embedded Candy objects from being saved properly. (It was treating them as _non_-Candy objects, which makes the world a gray and boring place.) While I was at it, refactored some methods and chipped away at some complexity.
