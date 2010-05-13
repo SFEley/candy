@@ -166,10 +166,16 @@ module Candy
         obj.rocket[1].should be_an(Object)
       end
       
+      it "doesn't turn arrays into CandyArrays inside non-Candy objects" do
+        obj = Wrapper.unwrap(@wrapped)
+        obj.rocket.should_not be_a(CandyArray)
+      end
+      
       it "traverses a hash and unwraps whatever it needs to" do
         hash = {"foo" => :bar, "'missile'" => @wrapped}
         unwrapped = Wrapper.unwrap(hash)
         unwrapped[:foo].should == :bar
+        puts unwrapped
         unwrapped["missile"].should be_a(Missile)
       end
     
@@ -182,9 +188,31 @@ module Candy
         unwrapped[3].should be_nil
         unwrapped[4].should == "hi"
       end
+      
   
     end
-    
 
+    describe "key names" do
+      it "can wrap symbols" do
+        Wrapper.wrap_key(:foo).should == 'foo'
+      end
+      
+      it "can wrap strings" do
+        Wrapper.wrap_key('foo').should == "'foo'"
+      end
+      
+      it "refuses to wrap complicated objects" do
+        lambda{Wrapper.wrap_key(Object.new)}.should raise_error(TypeError, /Object/)
+      end
+      
+      it "can unwrap symbols" do
+        Wrapper.unwrap_key('foo').should == :foo
+      end
+      
+      it "can unwrap strings" do
+        Wrapper.unwrap_key("'foo'").should == 'foo'
+      end
+    end
+    
   end
 end

@@ -235,7 +235,7 @@ describe Candy::Piece do
       end
       
       it "cascades deeply" do
-        @this.inner.inner = Zagnut.embed(beauty: 'recursive!')
+        @this.inner.inner = Zagnut.piece(beauty: 'recursive!')
         that = Zagnut(@this.id)
         that.inner.inner.beauty.should == 'recursive!'
       end

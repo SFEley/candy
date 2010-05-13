@@ -10,23 +10,23 @@ module Candy
     include Crunch
     include Embeddable
     
-    # Included for purposes of 'embeddable' compatibility, but does nothing except pass its 
-    # parameters to the new object.  Since you can't save an array on its own anyway, there's
-    # no need to flag it as "don't save."
-    def self.embed(*args, &block)
-      self.new(*args, &block)
+    # Creates the object with parent and attribute values set properly on the object and any children.
+    def self.embed(parent, attribute, *args)
+      this = self.new(*args)
+      this.candy_adopt(parent, attribute)
     end
     
     # Sets the initial array state.
-    def initialize(*args, &block)
-      @__candy = args
+    def initialize(*args)
+      @__candy = from_candy(args)
+      super()
     end
     
     # Set a value at a specified index in our array.  Note that this operation _does not_ confirm that the 
     # array in Mongo still matches our current state.  If concurrent updates have happened, you might end up
     # overwriting something other than what you thought.
     def []=(index, val)
-      property = candy_coat(@__candy_parent_key, val)
+      property = candy_coat(nil, val)  # There are no attribute names on array inheritance
       @__candy_parent.set embedded(index => property)
       self.candy[index] = property
     end
@@ -47,8 +47,8 @@ module Candy
     # Pops the front off the MongoDB array and returns it, then resyncs the array.
     # (Thus supporting real-time concurrency for queue-like behavior.)
     def shift(n=1)
-      doc = @__candy_parent.findAndModify({"_id" => @__candy_parent.id}, {'$pop' => {@__candy_parent_key => -1}})
-      @__candy = doc['value'][@__candy_parent_key.to_s]
+      doc = @__candy_parent.collection.find_and_modify query: {"_id" => @__candy_parent.id}, update: {'$pop' => {@__candy_parent_key => -1}}, new: false
+      @__candy = doc[@__candy_parent_key.to_s]
       @__candy.shift
     end
     
@@ -58,6 +58,11 @@ module Candy
     end
     alias_method :to_candy, :candy
     alias_method :to_ary, :candy
+    
+    # Unwraps all elements of the array, telling them who their parent is.  The attribute doesn't matter because arrays don't have them.
+    def from_candy(array)
+      array.map {|element| Wrapper.unwrap(element, self)}
+    end
     
     # Array equality.
     def ==(val)
@@ -70,5 +75,11 @@ module Candy
     end
     alias_method :size, :length
 
+    protected
+    
+    # Sets the array.  Primarily used by the .embed class method.
+    def candy=(val)
+      @__candy = val
+    end
   end
 end

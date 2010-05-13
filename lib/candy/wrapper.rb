@@ -52,22 +52,26 @@ module Candy
       array.map {|element| wrap(element)}
     end
     
-    # Takes a hash and returns it with values wrapped. Keys are converted to strings, and 
-    # wrapped with single quotes if they were already strings.  (So that we can easily tell
-    # hash keys from string keys later on.)
+    # Takes a hash and returns it with values wrapped. Symbol keys are reversibly converted to strings.
     def self.wrap_hash(hash)
       wrapped = {}
       hash.each do |key, value|  
-        case key
-        when Symbol
-          wrapped[key.to_s] = wrap(value)
-        when String
-          wrapped["'#{key}'"] = wrap(value)
-        else
-          wrapped[wrap(key)] = wrap(value)
-        end
+        wrapped[wrap_key(key)] = wrap(value)
       end
       wrapped
+    end
+    
+    # Lightly wraps hash keys, converting symbols to strings and wrapping strings in single quotes.
+    # Thus, we can recover symbols when we _unwrap_ them later.  Other key types will raise an exception.
+    def self.wrap_key(key)
+      case key
+      when String
+        "'#{key}'"
+      when Symbol
+        key.to_s
+      else
+        raise TypeError, "Candy field names must be strings or symbols. You gave us #{key.class}: #{key}"
+      end
     end
     
     # Returns a nested hash containing the class and instance variables of the object.  It's not the
@@ -84,43 +88,53 @@ module Candy
       {"__object_" => wrapped}
     end
     
-    # Undoes any complicated magic from the Wrapper.wrap method.  Almost everything falls through
-    # untouched except for symbol strings and hashed objects.
-    def self.unwrap(thing)
+    # Undoes any magic from the Wrapper.wrap method.  Almost everything falls through
+    # untouched except for arrays and hashes. The 'parent' and 'attribute' parameters
+    # are for recursively setting the parent properties of embedded Candy objects.
+    def self.unwrap(thing, parent=nil, attribute=nil)
       case thing
       when Hash
-        if thing["__object_"]
+        if thing.has_key?("__object_")
           unwrap_object(thing)
         else
-          unwrap_hash(thing)
+          unwrap_hash(thing, parent, attribute)
         end
       when Array
-        CandyArray.embed(*thing.map {|element| unwrap(element)})
-      # when /^__:(.+)/
-      #   $1.to_sym
+        if parent   # We only want to create CandyArrays inside Candy pieces
+          CandyArray.embed(parent, attribute, *thing)
+        else
+          thing.collect {|element| unwrap(element)}
+        end
       else
         thing
       end
     end
     
-    # Traverses the hash, unwrapping values and converting keys back to symbols.  Returns 
-    # the results as a CandyHash object.
-    def self.unwrap_hash(hash)
-      unwrapped = {}
-      hash.each do |key, value|
-        case key
-        when /^'(.+)'$/
-          unwrapped[$1] = unwrap(value)
-        when String
-          unwrapped[key.to_sym] = unwrap(value)
-        else
-          unwrapped[unwrap(key)] = unwrap(value)
-        end
-      end
-      if klass = unwrapped.delete(CLASS_KEY)
-        qualified_const_get(klass).embed(unwrapped)
+    
+    # Returns the hash as a Candy::Piece if a class name is embedded, or a CandyHash object otherwise.
+    # The 'parent' and 'attribute' parameters should be set by the caller if this is an embedded
+    # Candy object.
+    def self.unwrap_hash(hash, parent=nil, attribute=nil)
+      if class_name = hash.delete(CLASS_KEY.to_s)
+        klass = qualified_const_get(class_name)
       else
-        CandyHash.embed(unwrapped)
+        klass = CandyHash
+      end
+      
+      if parent
+        klass.embed(parent, attribute, hash)
+      else
+        klass.piece(hash)
+      end
+    end
+    
+    # The inverse of Wrapper.wrap_key -- removes single-quoting from strings and converts other strings 
+    # to symbols.
+    def self.unwrap_key(key)
+      if key =~ /^'(.*)'$/
+        $1
+      else
+        key.to_sym
       end
     end
     

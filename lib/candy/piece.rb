@@ -33,20 +33,6 @@ module Candy
         collection.update search_keys, fields, :upsert => true
       end
       
-      # Makes a new object with a given state that is _not_ immediately saved, but is 
-      # held in memory instead.  The principal use for this is to embed it in other 
-      # documents.  Except for the unsaved state, this functions identically to 'new'
-      # and will pass all its arguments to the initializer.  (Note that you can still 
-      # embed documents that _have_ been saved--but then you'll have the data in two
-      # places.)
-      def embed(*args, &block)
-        if args[-1].is_a?(Hash)
-          args[-1].merge!(EMBED_KEY => true)
-        else
-          args.push({EMBED_KEY => true})
-        end
-        self.new(*args)
-      end
 
       # Deep magic!  Finds and returns a single object by the named attribute.
       def method_missing(name, *args, &block)
@@ -58,6 +44,29 @@ module Candy
           super
         end
       end
+
+      # Creates the object with parent and attribute values set properly on the object and any children.
+      def embed(parent, attribute, *args)
+        this = self.piece(*args)
+        this.candy_adopt(parent, attribute)
+      end
+      
+      
+      # Makes a new object with a given state that is _not_ immediately saved, but is 
+      # held in memory instead.  The principal use for this is to embed it in other 
+      # documents.  Except for the unsaved state, this functions identically to 'new'
+      # and will pass all its arguments to the initializer.  (Note that you can still 
+      # embed documents that _have_ been saved--but then you'll have the data in two
+      # places.)
+      def piece(*args)
+        if args[-1].is_a?(Hash)
+          args[-1].merge!(EMBED_KEY => true)
+        else
+          args.push({EMBED_KEY => true})
+        end
+        self.new(*args)
+      end
+      
       
     private
       # Creates a method in the same namespace as the included class that points to
@@ -72,16 +81,15 @@ module Candy
     include Embeddable
     
     
-    # Our initializer checks the LAST argument passed to it, and pops it off the chain if it's a hash.
-    # If the hash contains an '_id' field we assume we're being constructed from a MongoDB document; 
-    # otherwise we assume we're a new document and insert ourselves into the database.
+    # Our initializer expects the last argument to be a hash of values. If the hash contains an '_id' 
+    # field we assume we're being constructed from a MongoDB document and we unwrap the remaining
+    # values; otherwise we assume we're a new document and set any values in the hash as if they
+    # were assigned. Any other arguments are not our business and will be passed down the chain.
     def initialize(*args, &block)
       if args[-1].is_a?(Hash)
         data = args.pop
-        if @__candy_id = data.delete('_id')  # We're an existing document
-          @__candy = self.from_candy(Wrapper.unwrap(data))
-        elsif data.delete(EMBED_KEY)  # We're being embedded: take any data, but don't save to Mongo
-          @__candy = data
+        if data.delete(EMBED_KEY) or @__candy_id = data.delete('_id')  # We're an embedded or existing document
+          @__candy = self.from_candy(data)
         else
           data.each {|key, value| send("#{key}=", value)}  # Assign all the data we're given
         end
@@ -96,7 +104,7 @@ module Candy
     
     # Pull our document from the database if we know our ID.
     def retrieve_document
-      Wrapper.unwrap(collection.find_one({'_id' => id})) if id
+      from_candy(collection.find_one({'_id' => id})) if id
     end
     
     
@@ -169,11 +177,15 @@ module Candy
       candy.merge(CLASS_KEY => self.class.name)
     end
     
-    # A hoook for specific object classes to set their internal state using the hash passed in by
-    # MongoDB.  If you override this method, delete any hash keys you need for your own purposes
-    # and then call 'super' on the remainder.
+    # Unwraps the values passed to us from MongoDB, setting parent attributes on any embedded Candy
+    # objects.
     def from_candy(hash) 
-      hash
+      unwrapped = {}
+      hash.each do |key, value|
+        field = Wrapper.unwrap_key(key)
+        unwrapped[field] = Wrapper.unwrap(value, self, field)
+      end
+      unwrapped
     end
     
     
