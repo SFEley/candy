@@ -78,6 +78,7 @@ module Candy
     
     # HERE STARTETH THE MODULE PROPER.  (The above are the class methods.)
     include Crunch
+    include Crunch::Document
     include Embeddable
     
     
