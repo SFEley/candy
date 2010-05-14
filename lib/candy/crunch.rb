@@ -212,18 +212,75 @@ module Candy
 
     end
     
+    # HERE BEGINNETH THE MODULE PROPER.
+    # (The above were class methods.)
     
-    # We're implementing FindAndModify on Mongo 1.4 until the Ruby driver gets around to being updated...
-    def findAndModify(query, update, sort={})
-      command = OrderedHash[
-        findandmodify: self.collection.name,
-        query: query,
-        update: update,
-        sort: sort
-      ]
-      result = self.class.db.command(command)
+    # The MongoDB collection object that everything saves to.  Defaults to the class's
+    # collection, which in turn defaults to the classname.
+    def collection
+      @__candy_collection ||= self.class.collection
+    end
+    
+    # This is normally set at the class level (with a default of the classname) but you
+    # can override it on a per-object basis if you need to.
+    def collection=(val)
+      @__candy_collection = val
+    end
+    
+    ### RETRIEVAL METHODS
+    # Returns the listed fields of the document. If no fields are given, returns the whole document.
+    def retrieve(*fields)
+      options = (fields.empty? ? {} : {fields: fields})
+      from_candy(collection.find_one({'_id' => id}, options)) if id
+    end
+    
+    
+    # A generic updater that performs the atomic operation specified on a value nested arbitrarily deeply.
+    # Operates in "unsafe" mode, meaning that no document errors will be returned and results are not 
+    # guaranteed.  The benefit is that it's very, very fast.  Always returns true.
+    def operate!(operator, fields)
+      operate operator, fields, {safe: false} and true
+    end
+    
+    # A generic updater that performs the atomic operation specified on a value nested arbitrarily deeply.
+    # 
+    def operate(operator, fields, options={safe: true})
+      if @__candy_parent
+        @__candy_parent.operate operator, embedded(fields), options
+      else
+        @__candy_id = collection.insert({}) unless id   # Ensure we have something to update
+        collection.update({'_id' => id}, {"$#{operator}" => Wrapper.wrap(fields)}, options)
+      end
     end
 
+    # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
+    # we have a document ID.  Otherwise inserts them and sets the object's ID.  Operates in 
+    # 'unsafe' mode, so database exceptions are not reported but updates are very fast.
+    def set!(fields)
+      operate! :set, fields
+    end
+
+    # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
+    # we have a document ID.  Otherwise inserts them and sets the object's ID.  Returns the 
+    # values passed to it.
+    def set(fields)
+      operate :set, fields
+      fields
+    end
+    
+    # Increments the specified field by the specified amount (defaults to 1). Does not return the 
+    # new value or any document errors.
+    def inc!(field, value=1)
+      operate! :inc, field: value
+    end
+
+    # Increments the specified field by the specified amount (defaults to 1) and returns the 
+    # new value.
+    def inc(field, value=1)
+      operate :inc, field => value
+      retrieve(field)[field]
+    end
+    
     
     def self.included(receiver)
       receiver.extend         ClassMethods

@@ -141,6 +141,14 @@ describe Candy::Piece do
       that.intensity.should == :Yowza
     end
     
+    it "can get particular attributes" do
+      @this.smell = "fruity"
+      @this.feel = "rough"
+      that = Zagnut(@this.id)
+      that.retrieve(:smell)[:smell].should == "fruity" 
+      that.retrieve(:smell).should_not have_key(:feel)
+    end
+    
     # Test class for scoped magic method generation
     class BabyRuth
       include Candy::Piece

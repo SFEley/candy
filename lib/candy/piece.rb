@@ -101,16 +101,11 @@ module Candy
     def id
       @__candy_id
     end
-    
-    # Pull our document from the database if we know our ID.
-    def retrieve_document
-      from_candy(collection.find_one({'_id' => id})) if id
-    end
-    
+        
     
     # Returns the hash of memoized values.
     def candy
-      @__candy ||= retrieve_document || {}
+      @__candy ||= retrieve || {}
     end
     
     # Objects are equal if they point to the same MongoDB record (unless both have IDs of nil, in which case 
@@ -153,17 +148,6 @@ module Candy
       self
     end
     
-    # The MongoDB collection object that everything saves to.  Defaults to the class's
-    # collection, which in turn defaults to the classname.
-    def collection
-      @__candy_collection ||= self.class.collection
-    end
-    
-    # This is normally set at the class level (with a default of the classname) but you
-    # can override it on a per-object basis if you need to.
-    def collection=(val)
-      @__candy_collection = val
-    end
     
     # Convenience method for debugging.  Shows the class, the Mongo ID, and the saved state hash.
     def to_s
@@ -189,29 +173,6 @@ module Candy
     end
     
     
-    # Given a hash of property/value pairs, sets those values in Mongo using the atomic $set if
-    # we have a document ID.  Otherwise inserts them and sets the object's ID. 
-    def set(fields)
-      operate :set, fields
-    end
-    
-    # Increments the specified field by the (optional) specified amount and returns the new value.
-    def inc(field, value=1)
-      result = collection.find_and_modify query: {"_id" => id}, update: {'$inc' => {Wrapper.wrap_key(field) => value}}, new: true
-      @__candy = from_candy(result)
-      candy[field]
-    end
-    
-    # A generic updater that performs the atomic operation specified on a value nested arbitrarily deeply.
-    # 
-    def operate(operator, fields)
-      if @__candy_parent
-        @__candy_parent.operate operator, embedded(fields)
-      else
-        @__candy_id = collection.insert({}) unless id   # Ensure we have something to update
-        collection.update({'_id' => id}, {"$#{operator}" => Wrapper.wrap(fields)})
-      end
-    end
   
   private
         

@@ -175,7 +175,6 @@ module Candy
         hash = {"foo" => :bar, "'missile'" => @wrapped}
         unwrapped = Wrapper.unwrap(hash)
         unwrapped[:foo].should == :bar
-        puts unwrapped
         unwrapped["missile"].should be_a(Missile)
       end
     

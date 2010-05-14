@@ -3,6 +3,17 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.9 - 2010-05-14 (the "+1" release)
+--------------------------------------
+Moved methods around again, placing more of the database update methods into Candy::Crunch.  Also began support for two flavors of 
+atomic update methods:
+
+1. _Safe_ methods that call the collection in "safe" mode, meaning that it's much slower but the update is verified and exceptions are returned by the Mongo driver.  These methods also return the new values.  So far supported are **set** and **inc**.
+2. _Unsafe_ or _bang!_ methods that call the collection in "unsafe" mode, for maximum speed but without verification or new values returned.  So far supported are **set!** and **inc!**.
+
+* Refactored; added 'bang!' methods for atomic updates
+
+
 v0.2.8 - 2010-05-13 (the "Holy crap, that was ten pomodoros" release)
 ---------------------------------------------------------------------
 Major refactoring to fix a major bug: embedded documents weren't being loaded properly on document retrieval.  This resulted in a lot of code being moved around, and some regrettable circular connascence between Piece and Wrapper that I hope to address later.  Overall, though, it's simpler now.
