@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{candy}
-  s.version = "0.2.9"
+  s.version = "0.2.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
-  s.date = %q{2010-05-14}
+  s.date = %q{2010-06-10}
   s.description = %q{Candy provides simple, transparent object persistence for the MongoDB database.  Classes that 
 include Candy modules save all properties to Mongo automatically, can be recursively embedded,
 and can retrieve records with chainable open-ended class methods, eliminating the need for 
@@ -33,6 +33,7 @@ method calls like 'save' and 'find.'
      "lib/candy/array.rb",
      "lib/candy/collection.rb",
      "lib/candy/crunch.rb",
+     "lib/candy/crunch/document.rb",
      "lib/candy/embeddable.rb",
      "lib/candy/exceptions.rb",
      "lib/candy/factory.rb",
@@ -56,7 +57,7 @@ method calls like 'save' and 'find.'
   s.homepage = %q{http://github.com/SFEley/candy}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.7}
   s.summary = %q{Transparent persistence for MongoDB}
   s.test_files = [
     "spec/candy/array_spec.rb",
@@ -75,7 +76,7 @@ method calls like 'save' and 'find.'
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<bson>, [">= 0.20.1"])
       s.add_runtime_dependency(%q<bson_ext>, [">= 0.20.1"])
       s.add_runtime_dependency(%q<mongo>, [">= 0.20.1"])
