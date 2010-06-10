@@ -51,6 +51,14 @@ describe Candy::CandyArray do
       @this.bits[3].should == 'schadenfreude'
     end
 
+    it "is enumerable" do
+      @this.bits.map{|b| b.upcase}.should == ['PEANUT', 'ALMONDS', 'TITANIUM']
+    end
+    
+    it "is sortable" do
+      @this.bits.sort.should == ['almonds', 'peanut', 'titanium']
+    end
+    
     after(:each) do
       Zagnut.collection.remove
     end

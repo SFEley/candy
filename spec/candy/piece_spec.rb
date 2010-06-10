@@ -229,6 +229,16 @@ describe Candy::Piece do
       @verifier.find_one(ounces: 12)["crunchy"].should == :very
     end
     
+    
+    it "knows its keys" do
+      @this.keys.should == [:ounces, :crunchy]
+    end
+
+    it "knows its values" do
+      @this.values.should == [17, :very]
+    end
+
+    
   end
   
   describe "embedding" do

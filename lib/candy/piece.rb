@@ -149,6 +149,15 @@ module Candy
       self
     end
     
+    # Returns the keys we've stored.
+    def keys
+      candy.keys
+    end
+    
+    # Returns the values we've stored.
+    def values
+      candy.values
+    end
     
     # Convenience method for debugging.  Shows the class, the Mongo ID, and the saved state hash.
     def to_s

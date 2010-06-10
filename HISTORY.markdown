@@ -3,6 +3,16 @@ Candy History
 
 This document aims to provide only an overview.  Further, we've only really been tracking things since **v0.2**.  For obsessive detail, just check out the `git log`.
 
+v0.2.10 - 2010-06-10 (the "This is not my beautiful hash" release)
+------------------------------------------------------------------
+Made arrays enumerable finally (thanks to dominikh with issue #13) and added some vital hash methods to Piece that I needed.
+
+**NOTE:** I've been slow on updates the past few weeks. It's because I got a crazy new idea on how to interface with the Mongo parts (the "Candy::Crunch" part of this gem) and I've been spending my free dev time playing with that. It might take a bit longer, but if I can get it to work, the non-driver parts of Candy will be both simpler and more incredible. Ping me if you want to know more about what I'm babbling about.
+
+* Fixed Github issue #13
+* Added Piece#keys and Piece#values
+
+
 v0.2.9 - 2010-05-14 (the "+1" release)
 --------------------------------------
 Moved methods around again, placing more of the database update methods into Candy::Crunch.  Also began support for two flavors of 

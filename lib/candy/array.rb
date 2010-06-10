@@ -9,6 +9,7 @@ module Candy
   class CandyArray
     include Crunch
     include Embeddable
+    include Enumerable
     
     # Creates the object with parent and attribute values set properly on the object and any children.
     def self.embed(parent, attribute, *args)
@@ -34,6 +35,11 @@ module Candy
     # Retrieves the value from our internal array.
     def [](index)
       candy[index]
+    end
+    
+    # Iterates over each value in turn, so that we can have proper Enumerable support
+    def each(&block)
+      candy.each(&block)
     end
     
     # Appends a value to our array.  

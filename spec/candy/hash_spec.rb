@@ -17,7 +17,11 @@ describe Candy::CandyHash do
   it "reads the hash" do
     that = Zagnut(@this.id)
     that.filling.taste.should == 'caramel'
-    that.filling.should be_a(Hash)
+  end
+  
+  it "reads the hash with brackets" do
+    that = Zagnut(@this.id)
+    that[:filling][:taste].should == 'caramel'
   end
   
   it "cascades changes" do
