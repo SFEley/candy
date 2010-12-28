@@ -16,13 +16,6 @@ DESCRIPTION
     gem.email = "sfeley@gmail.com"
     gem.homepage = "http://github.com/SFEley/candy"
     gem.authors = ["Stephen Eley"]
-    gem.add_dependency "bson", ">= 0.20.1"
-    gem.add_dependency "bson_ext", '>= 0.20.1'
-    gem.add_dependency "mongo", ">= 0.20.1"
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    # gem.add_development_dependency "yard", ">= 0"
-    gem.add_development_dependency "mocha", ">= 0.9.8"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
