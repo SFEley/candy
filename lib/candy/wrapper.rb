@@ -17,7 +17,7 @@ module Candy
                 Time,
                 Regexp,
                 BSON::ByteBuffer, 
-                BSON::ObjectID, 
+                BSON::ObjectId, 
                 BSON::Code,
                 BSON::DBRef]
     

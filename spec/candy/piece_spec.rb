@@ -21,7 +21,7 @@ describe Candy::Piece do
   
   it "knows its ID after inserting" do
     @this.name = 'Zagnut'
-    @this.id.should be_a(BSON::ObjectID)
+    @this.id.should be_a(BSON::ObjectId)
   end
   
   
@@ -112,7 +112,7 @@ describe Candy::Piece do
     end
         
     it "returns nil on an object that can't be found" do
-      id = BSON::ObjectID.new
+      id = BSON::ObjectId.new
       Zagnut(id).should be_nil
     end
     
