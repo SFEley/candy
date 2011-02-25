@@ -130,7 +130,7 @@ module Candy
   private
       
     def refresh_cursor
-      @_candy_cursor = self.class.collection.find(@_candy_query, @_candy_options)
+      @_candy_cursor = self.class.collection.find(@_candy_query, @_candy_options).sort(@_candy_sort)
     end
     
     def extract_options(hash)
