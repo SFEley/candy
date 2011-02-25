@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-gem 'mongo', '1.1.5'
-gem 'bson_ext', '1.1.5'
+gem 'mongo', '1.2.4'
+gem 'bson_ext', '1.2.4'
 
 group :development do
   gem 'rspec', '~> 2.3.0'

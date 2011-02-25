@@ -76,19 +76,19 @@ method calls like 'save' and 'find.'
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<mongo>, ["= 1.1.5"])
-      s.add_runtime_dependency(%q<bson_ext>, ["= 1.1.5"])
+      s.add_runtime_dependency(%q<mongo>, ["= 1.2.4"])
+      s.add_runtime_dependency(%q<bson_ext>, ["= 1.2.4"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<mocha>, ["~> 0.9.10"])
     else
-      s.add_dependency(%q<mongo>, ["= 1.1.5"])
-      s.add_dependency(%q<bson_ext>, ["= 1.1.5"])
+      s.add_dependency(%q<mongo>, ["= 1.2.4"])
+      s.add_dependency(%q<bson_ext>, ["= 1.2.4"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<mocha>, ["~> 0.9.10"])
     end
   else
-    s.add_dependency(%q<mongo>, ["= 1.1.5"])
-    s.add_dependency(%q<bson_ext>, ["= 1.1.5"])
+    s.add_dependency(%q<mongo>, ["= 1.2.4"])
+    s.add_dependency(%q<bson_ext>, ["= 1.2.4"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<mocha>, ["~> 0.9.10"])
   end
