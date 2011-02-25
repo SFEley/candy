@@ -87,6 +87,7 @@ module Candy
     # Makes our collection enumerable.  This relies heavily on Mongo::Cursor methods --
     # we only reimplement it so that the objects we return can be Candy objects.
     def each
+      refresh_cursor
       while this = @_candy_cursor.next_document
         yield self.class._candy_piece.new(this)
       end
