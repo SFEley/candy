@@ -17,23 +17,23 @@ describe Candy::Crunch do
     it "takes yours if you give it one" do
       c = Mongo::Connection.new('example.org', 11111, :connect => false)
       PeanutBrittle.connection = c
-      PeanutBrittle.connection.nodes.should == [["example.org", 11111]]
+      PeanutBrittle.connection.host_to_try.should == ["example.org", 11111]
     end
 
     it "creates the default connection if you don't give it one" do
-      PeanutBrittle.connection.nodes.should == [["localhost", 27017]]
+      PeanutBrittle.connection.host_to_try.should == ["localhost", 27017]
     end
     
 
     it "uses the Candy.host setting if you don't override it" do
       Candy.host = 'example.net'
-      PeanutBrittle.connection.nodes.should == [["example.net", 27017]]
+      PeanutBrittle.connection.host_to_try.should == ["example.net", 27017]
     end
 
     it "uses the Candy.port setting if you don't override it" do
       Candy.host = 'localhost'
       Candy.port = 33333
-      PeanutBrittle.connection.nodes.should == [["localhost", 33333]]
+      PeanutBrittle.connection.host_to_try.should == ["localhost", 33333]
     end
 
     it "uses the Candy.connection_options setting if you don't override it" do
