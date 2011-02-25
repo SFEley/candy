@@ -140,7 +140,7 @@ describe Candy::Crunch do
   
   describe "collection" do
     it "takes yours if you give it one" do
-      c = Mongo::Collection.new(PeanutBrittle.db, 'blah')
+      c = Mongo::Collection.new('blah', PeanutBrittle.db)
       PeanutBrittle.collection = c
       PeanutBrittle.collection.name.should == 'blah'
     end
