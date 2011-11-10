@@ -60,10 +60,10 @@ module Candy
       super
       @_candy_query = {}
       if conditions.is_a?(Hash)
-        @_candy_options = {:fields => '_id'}.merge(extract_options(conditions))
+        @_candy_options = extract_options(conditions)
         @_candy_query.merge!(conditions)
       else
-        @_candy_options = {:fields => '_id'}
+        @_candy_options = {}
       end
       refresh_cursor
     end

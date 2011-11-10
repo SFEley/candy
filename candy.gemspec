@@ -21,9 +21,9 @@ method calls like 'save' and 'find.'
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
-  s.add_dependency 'mongo', '1.2.4'
-  s.add_dependency 'bson_ext', '1.2.4'
+  s.add_dependency 'mongo', '~> 1.4.0'
+  s.add_dependency 'bson_ext', '~> 1.4.0'
 
-  s.add_development_dependency 'rspec', '~> 2.3.0'
-  s.add_development_dependency 'mocha', '~> 0.9.10'
+  s.add_development_dependency 'rspec', '~> 2.7.0'
+  s.add_development_dependency 'mocha', '~> 0.10.0'
 end
