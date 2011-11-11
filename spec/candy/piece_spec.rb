@@ -238,8 +238,22 @@ describe Candy::Piece do
       @this.values.should == [17, :very]
     end
 
-    
   end
+  
+  describe "removing" do
+    before(:each) do
+      @eat_me = Zagnut.new({flavor: 'gross', color: 'green'})
+      #@eat_me.flavor = 'gross'
+      #@eat_me.color = 'green'
+    end
+    
+    it "removes the object from the database" do
+      @verifier.find_one(flavor: 'gross')['color'].should == 'green'
+      @eat_me.remove
+      @verifier.find_one(flavor: 'gross').should be_nil
+    end
+  end
+    
   
   describe "embedding" do
     describe "Candy objects" do

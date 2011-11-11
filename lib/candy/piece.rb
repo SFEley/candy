@@ -102,7 +102,11 @@ module Candy
     def id
       @__candy_id
     end
-        
+    
+    # Remove an item
+    def remove
+      self.class.collection.remove(_id: @__candy_id)
+    end
     
     # Returns the hash of memoized values.
     def candy
