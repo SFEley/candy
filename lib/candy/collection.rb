@@ -60,10 +60,10 @@ module Candy
       super
       @_candy_query = {}
       if conditions.is_a?(Hash)
-        @_candy_options = {:fields => '_id'}.merge(extract_options(conditions))
+        @_candy_options = extract_options(conditions)
         @_candy_query.merge!(conditions)
       else
-        @_candy_options = {:fields => '_id'}
+        @_candy_options = {}
       end
       refresh_cursor
     end
@@ -87,6 +87,7 @@ module Candy
     # Makes our collection enumerable.  This relies heavily on Mongo::Cursor methods --
     # we only reimplement it so that the objects we return can be Candy objects.
     def each
+      refresh_cursor
       while this = @_candy_cursor.next_document
         yield self.class._candy_piece.new(this)
       end
@@ -129,7 +130,7 @@ module Candy
   private
       
     def refresh_cursor
-      @_candy_cursor = self.class.collection.find(@_candy_query, @_candy_options)
+      @_candy_cursor = self.class.collection.find(@_candy_query, @_candy_options).sort(@_candy_sort)
     end
     
     def extract_options(hash)

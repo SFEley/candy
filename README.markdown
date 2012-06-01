@@ -18,7 +18,7 @@ When you mix the **Candy::Piece** module into a class, the class gains a Mongo c
     
     me = Person.new
     me.last_name = 'Eley'   # New record created and saved to Mongo
-    me.id                   # => ObjectID(4bb606f9609c8417cf00004b) or thereabouts
+    me.id                   # => ObjectId(4bb606f9609c8417cf00004b) or thereabouts
     me[:height] = 67        # Or me.height = 67 -- either way, updates with a Mongo $set
 
 ### Embedded Documents

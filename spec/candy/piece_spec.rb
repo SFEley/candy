@@ -21,7 +21,7 @@ describe Candy::Piece do
   
   it "knows its ID after inserting" do
     @this.name = 'Zagnut'
-    @this.id.should be_a(BSON::ObjectID)
+    @this.id.should be_a(BSON::ObjectId)
   end
   
   
@@ -112,7 +112,7 @@ describe Candy::Piece do
     end
         
     it "returns nil on an object that can't be found" do
-      id = BSON::ObjectID.new
+      id = BSON::ObjectId.new
       Zagnut(id).should be_nil
     end
     
@@ -238,8 +238,22 @@ describe Candy::Piece do
       @this.values.should == [17, :very]
     end
 
-    
   end
+  
+  describe "removing" do
+    before(:each) do
+      @eat_me = Zagnut.new({flavor: 'gross', color: 'green'})
+      #@eat_me.flavor = 'gross'
+      #@eat_me.color = 'green'
+    end
+    
+    it "removes the object from the database" do
+      @verifier.find_one(flavor: 'gross')['color'].should == 'green'
+      @eat_me.remove
+      @verifier.find_one(flavor: 'gross').should be_nil
+    end
+  end
+    
   
   describe "embedding" do
     describe "Candy objects" do

@@ -46,6 +46,12 @@ describe Candy::Collection do
     this.weight.should == 11.8
   end
   
+  it "yields populated items to .each" do
+    Zagnuts.each {|z|
+      z.color.should =~ /red|blue/
+    }
+  end
+  
   it "can take scoping on a class or instance level" do
     these = Zagnuts.color("red")
     these.pieces(6)
